@@ -1,0 +1,4 @@
+.envrc
+.mypy_cache/
+.venv/
+rofi_chrome_tab.json

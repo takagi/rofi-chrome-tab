@@ -1,0 +1,9 @@
+{
+  "name": "rofi_chrome_tab",
+  "description": "A chrome extension to select tabs from rofi window switcher",
+  "path": "/PATH/TO/rofi-chrome-tab/rofi_chrome_tab.py",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://CHROME_EXTENSION_ID/"
+  ]
+}

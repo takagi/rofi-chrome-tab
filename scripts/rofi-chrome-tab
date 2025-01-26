@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    for sock in `ls /tmp/native-app.*.sock`; do
+        echo list | nc -U ${sock}
+    done
+else
+    pid=$(echo $1 | cut -d , -f 1)
+    tab_id=$(echo $1 | cut -d , -f 2)
+    echo "select ${tab_id}" | nc -U /tmp/native-app.${pid}.sock
+    i3-msg '[urgent=latest] focus' > /dev/null
+fi
+ 
