@@ -1,19 +1,22 @@
 #!/usr/bin/python
 
-from dataclasses import dataclass
+import asyncio
 import json
 import os
-import socketserver
 import sys
 import time
-from typing import cast, Callable
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Callable, cast
 
 #
 # Util
 #
 
 def log(msg: str) -> None:
-    print(msg, file=sys.stderr)
+    with open('/tmp/rofi-chrome-tab.log', 'a') as f:
+        now = datetime.now(timezone.utc)
+        print(f'[{now.isoformat()}] {msg}', file=f)
 
 def call_with_retry[T](thunk: Callable[[], T]) -> T:
     for _ in range(3):
@@ -34,10 +37,13 @@ def call_with_retry[T](thunk: Callable[[], T]) -> T:
 def recv_message() -> object:
     raw_length: bytes = sys.stdin.buffer.read(4)
     message_length = int.from_bytes(raw_length, 'little')
-    encoded_message: bytes = sys.stdin.buffer.read(message_length)
+    if message_length == 0:
+        raise EOFError()
 
+    encoded_message: bytes = sys.stdin.buffer.read(message_length)
     message: str = encoded_message.decode('utf-8')
-    log('recv_message: ' + message)
+    log('recv_message: ' + message[:30] + ('...' if len(message) >= 30 else ''))
+
     return json.loads(message)
 
 def send_message(message: object) -> None:
@@ -63,6 +69,8 @@ def tab_title(tab: Tab) -> str:
 
 def tab_host(tab: Tab) -> str:
     return cast(str, tab['host'])
+
+tabs: list[Tab] = []
 
 #
 # NativeMessaging
@@ -119,7 +127,65 @@ def parse_command(input: str) -> BaseCommand:
     raise ValueError(f'Invalid command: {input}')
 
 #
-# Server
+# UDS handler
+#
+
+async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+    log('handle_client()')
+
+    input = (await reader.read(1024)).decode('utf-8').strip()
+    log('recv: ' + input)
+
+    try:
+        command = parse_command(input)
+    except ValueError as e:
+        writer.write(b'Invalid command\n')
+        raise e
+
+    if isinstance(command, CountCommand):
+        count = NativeMessaging.count_tabs()
+        writer.write(str(count).encode())
+        writer.write(b'\n')
+        await writer.drain()
+
+    elif isinstance(command, ListCommand):
+        for tab in tabs:
+            line = ','.join([str(PID), str(tab_id(tab)), tab_host(tab), tab_title(tab)])
+            writer.write(line.encode())
+            writer.write(b'\n')
+            await writer.drain()
+
+    elif isinstance(command, SelectCommand):
+        NativeMessaging.select_tab(command.tabId)
+
+    else:
+        raise AssertionError
+
+    writer.close()
+    await writer.wait_closed()
+
+#
+# stdin callback
+#
+
+def stdin_callback() -> None:
+    log('stdin_callback()')
+
+    try:
+        _ = recv_message()  # updated
+    except EOFError:
+        # Shutting down
+        loop = asyncio.get_running_loop()
+        loop.remove_reader(sys.stdin)
+        return
+
+    time.sleep(0.5)  # delay before a tab is switched
+
+    global tabs
+    tabs = NativeMessaging.list_tabs()
+
+#
+# Main
 #
 
 PID = os.getpid()
@@ -128,45 +194,14 @@ SOCKET_PATH = f'/tmp/native-app.{PID}.sock'
 if os.path.exists(SOCKET_PATH):
     os.remove(SOCKET_PATH)
 
-class RequestHandler(socketserver.BaseRequestHandler):
-    def handle(self) -> None:
-        input = self.request.recv(1024).strip().decode('utf-8')
-        log('recv: ' + input)
+async def main() -> None:
+    server = await asyncio.start_unix_server(handle_client, SOCKET_PATH)
 
-        try:
-            command = parse_command(input)
-        except ValueError as e:
-            self.request.send(b'Invalid command\n')
-            raise e
+    loop = asyncio.get_running_loop()
+    loop.add_reader(sys.stdin, stdin_callback)
 
-        if isinstance(command, CountCommand):
-            count = NativeMessaging.count_tabs()
-            self.request.send(str(count).encode())
-            self.request.send(b'\n')
-
-        elif isinstance(command, ListCommand):
-            tabs = NativeMessaging.list_tabs()
-
-            for tab in tabs:
-                line = ','.join([str(PID), str(tab_id(tab)), tab_host(tab), tab_title(tab)])
-                self.request.send(line.encode())
-                self.request.send(b'\n')
-
-        elif isinstance(command, SelectCommand):
-            NativeMessaging.select_tab(command.tabId)
-
-        else:
-            raise AssertionError
-
-#
-# Main
-#
-
-def main() -> None:
-    def make_server() -> socketserver.UnixStreamServer:
-        return socketserver.UnixStreamServer(SOCKET_PATH, RequestHandler)
-    with call_with_retry(make_server) as server:
-        server.serve_forever()
+    async with server:
+        await server.serve_forever()
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
