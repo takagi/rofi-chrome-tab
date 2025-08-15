@@ -65,12 +65,33 @@ port.onDisconnect.addListener(() => {
     }
 });
 
-chrome.tabs.onActivated.addListener((_tabId, _moveInfo) => {
-    if (isUpdating) return;
+function notifyUpdatedEvent() {
+    chrome.tabs.query({})
+        .then(tabs => {
+            let tabs1 = [];
+            for (let tab of tabs) {
+                const host = (() => {
+                    try {
+                        return new URL(tab.url).hostname;
+                    } catch {
+                        return 'No URL'
+                    }
+                })();
+                tabs1.push({ id: tab.id, title: tab.title, host });
+            }
 
-    log('postMessage: updated');
-    port.postMessage('updated');
+            const message = JSON.stringify(tabs1);
+            const preview = message.length >= 30 ? message.slice(0, 30) + "..." : message;
+            log('postMessage: ' + preview);
+            port.postMessage({
+                'type': 'updated',
+                'tabs': tabs1
+            });
+    });
+}
+
+chrome.tabs.onActivated.addListener((_tabId, _moveInfo) => {
+    notifyUpdatedEvent();
 });
 
-log('postMessage: updated');
-port.postMessage('updated');
+notifyUpdatedEvent();

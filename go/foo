@@ -1,0 +1,804 @@
+# command-line-arguments
+main.SendMessage STEXT size=265 args=0x20 locals=0x40 funcid=0x0 align=0x0
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	TEXT	main.SendMessage(SB), ABIInternal, $64-32
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	CMPQ	SP, 16(R14)
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$0, $-2
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	JLS	215
+	0x000a 00010 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$0, $-1
+	0x000a 00010 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PUSHQ	BP
+	0x000b 00011 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	SP, BP
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	SUBQ	$56, SP
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	CX, main.message+88(FP)
+	0x0017 00023 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	DI, main.message+96(FP)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	FUNCDATA	$0, gclocals·CdaV7t8dQnZWH74m3yJYCA==(SB)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	FUNCDATA	$1, gclocals·MQ6CtnXyVuJSavzXa6T6ng==(SB)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	FUNCDATA	$5, main.SendMessage.arginfo1(SB)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	FUNCDATA	$6, main.SendMessage.argliveinfo(SB)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$3, $1
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:12)	MOVQ	BX, main.w+80(SP)
+	0x0021 00033 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:12)	MOVQ	AX, main.w+72(SP)
+	0x0026 00038 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:12)	PCDATA	$3, $2
+	0x0026 00038 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	MOVQ	CX, AX
+	0x0029 00041 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	MOVQ	DI, BX
+	0x002c 00044 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	PCDATA	$1, $1
+	0x002c 00044 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	CALL	encoding/json.Marshal(SB)
+	0x0031 00049 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:12)	TESTQ	DI, DI
+	0x0034 00052 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:12)	JNE	203
+	0x003a 00058 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	MOVQ	BX, main.encoded.len+32(SP)
+	0x003f 00063 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	MOVQ	AX, main.encoded.ptr+48(SP)
+	0x0044 00068 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:11)	MOVQ	CX, main.encoded.cap+40(SP)
+	0x0049 00073 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:17)	LEAQ	type:[4]uint8(SB), AX
+	0x0050 00080 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:17)	PCDATA	$1, $2
+	0x0050 00080 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:17)	CALL	runtime.newobject(SB)
+	0x0055 00085 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:18)	XCHGL	AX, AX
+	0x0056 00086 (/usr/lib/go/src/encoding/binary/binary.go:98)	MOVQ	main.encoded.len+32(SP), CX
+	0x005b 00091 (/usr/lib/go/src/encoding/binary/binary.go:98)	MOVL	CX, (AX)
+	0x005d 00093 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	main.w+72(SP), CX
+	0x0062 00098 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	24(CX), CX
+	0x0066 00102 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	AX, BX
+	0x0069 00105 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVL	$4, DI
+	0x006e 00110 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	main.w+80(SP), AX
+	0x0073 00115 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	CX, DX
+	0x0076 00118 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	MOVQ	DI, CX
+	0x0079 00121 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	CALL	DX
+	0x007b 00123 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	NOP
+	0x0080 00128 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	TESTQ	BX, BX
+	0x0083 00131 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:20)	JNE	191
+	0x0085 00133 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	main.w+72(SP), DX
+	0x008a 00138 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	24(DX), DX
+	0x008e 00142 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	main.w+80(SP), AX
+	0x0093 00147 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	main.encoded.ptr+48(SP), BX
+	0x0098 00152 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	main.encoded.len+32(SP), CX
+	0x009d 00157 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	MOVQ	main.encoded.cap+40(SP), DI
+	0x00a2 00162 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	PCDATA	$1, $3
+	0x00a2 00162 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	CALL	DX
+	0x00a4 00164 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	TESTQ	BX, BX
+	0x00a7 00167 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:24)	JEQ	181
+	0x00a9 00169 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:25)	MOVQ	BX, AX
+	0x00ac 00172 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:25)	MOVQ	CX, BX
+	0x00af 00175 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:25)	ADDQ	$56, SP
+	0x00b3 00179 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:25)	POPQ	BP
+	0x00b4 00180 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:25)	RET
+	0x00b5 00181 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:28)	XORL	AX, AX
+	0x00b7 00183 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:28)	XORL	BX, BX
+	0x00b9 00185 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:28)	ADDQ	$56, SP
+	0x00bd 00189 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:28)	POPQ	BP
+	0x00be 00190 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:28)	RET
+	0x00bf 00191 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:21)	MOVQ	BX, AX
+	0x00c2 00194 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:21)	MOVQ	CX, BX
+	0x00c5 00197 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:21)	ADDQ	$56, SP
+	0x00c9 00201 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:21)	POPQ	BP
+	0x00ca 00202 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:21)	RET
+	0x00cb 00203 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	MOVQ	DI, AX
+	0x00ce 00206 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	MOVQ	SI, BX
+	0x00d1 00209 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	ADDQ	$56, SP
+	0x00d5 00213 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	POPQ	BP
+	0x00d6 00214 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	RET
+	0x00d7 00215 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:13)	NOP
+	0x00d7 00215 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$1, $-1
+	0x00d7 00215 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$0, $-2
+	0x00d7 00215 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	AX, 8(SP)
+	0x00dc 00220 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	BX, 16(SP)
+	0x00e1 00225 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	CX, 24(SP)
+	0x00e6 00230 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	DI, 32(SP)
+	0x00eb 00235 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	CALL	runtime.morestack_noctxt(SB)
+	0x00f0 00240 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	PCDATA	$0, $-1
+	0x00f0 00240 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	8(SP), AX
+	0x00f5 00245 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	16(SP), BX
+	0x00fa 00250 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	24(SP), CX
+	0x00ff 00255 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	MOVQ	32(SP), DI
+	0x0104 00260 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:10)	JMP	0
+	0x0000 49 3b 66 10 0f 86 cd 00 00 00 55 48 89 e5 48 83  I;f.......UH..H.
+	0x0010 ec 38 48 89 4c 24 58 48 89 7c 24 60 48 89 5c 24  .8H.L$XH.|$`H.\$
+	0x0020 50 48 89 44 24 48 48 89 c8 48 89 fb e8 00 00 00  PH.D$HH..H......
+	0x0030 00 48 85 ff 0f 85 91 00 00 00 48 89 5c 24 20 48  .H........H.\$ H
+	0x0040 89 44 24 30 48 89 4c 24 28 48 8d 05 00 00 00 00  .D$0H.L$(H......
+	0x0050 e8 00 00 00 00 90 48 8b 4c 24 20 89 08 48 8b 4c  ......H.L$ ..H.L
+	0x0060 24 48 48 8b 49 18 48 89 c3 bf 04 00 00 00 48 8b  $HH.I.H.......H.
+	0x0070 44 24 50 48 89 ca 48 89 f9 ff d2 0f 1f 44 00 00  D$PH..H......D..
+	0x0080 48 85 db 75 3a 48 8b 54 24 48 48 8b 52 18 48 8b  H..u:H.T$HH.R.H.
+	0x0090 44 24 50 48 8b 5c 24 30 48 8b 4c 24 20 48 8b 7c  D$PH.\$0H.L$ H.|
+	0x00a0 24 28 ff d2 48 85 db 74 0c 48 89 d8 48 89 cb 48  $(..H..t.H..H..H
+	0x00b0 83 c4 38 5d c3 31 c0 31 db 48 83 c4 38 5d c3 48  ..8].1.1.H..8].H
+	0x00c0 89 d8 48 89 cb 48 83 c4 38 5d c3 48 89 f8 48 89  ..H..H..8].H..H.
+	0x00d0 f3 48 83 c4 38 5d c3 48 89 44 24 08 48 89 5c 24  .H..8].H.D$.H.\$
+	0x00e0 10 48 89 4c 24 18 48 89 7c 24 20 e8 00 00 00 00  .H.L$.H.|$ .....
+	0x00f0 48 8b 44 24 08 48 8b 5c 24 10 48 8b 4c 24 18 48  H.D$.H.\$.H.L$.H
+	0x0100 8b 7c 24 20 e9 f7 fe ff ff                       .|$ .....
+	rel 3+0 t=R_USEIFACEMETHOD type:io.Writer+96
+	rel 3+0 t=R_USEIFACEMETHOD type:io.Writer+96
+	rel 45+4 t=R_CALL encoding/json.Marshal+0
+	rel 76+4 t=R_PCREL type:[4]uint8+0
+	rel 81+4 t=R_CALL runtime.newobject+0
+	rel 121+0 t=R_CALLIND +0
+	rel 162+0 t=R_CALLIND +0
+	rel 236+4 t=R_CALL runtime.morestack_noctxt+0
+main.RecvMessage STEXT size=280 args=0x20 locals=0x48 funcid=0x0 align=0x0
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	TEXT	main.RecvMessage(SB), ABIInternal, $72-32
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	CMPQ	SP, 16(R14)
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$0, $-2
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	JLS	230
+	0x000a 00010 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$0, $-1
+	0x000a 00010 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PUSHQ	BP
+	0x000b 00011 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	SP, BP
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	SUBQ	$64, SP
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	FUNCDATA	$0, gclocals·VdvRTWP1EtLl57Vjm5yzBg==(SB)
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	FUNCDATA	$1, gclocals·E5rnZV/9Vbt7Gxv9kj5fSw==(SB)
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	FUNCDATA	$5, main.RecvMessage.arginfo1(SB)
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	FUNCDATA	$6, main.RecvMessage.argliveinfo(SB)
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$3, $1
+	0x0012 00018 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	MOVQ	DI, main.message+104(SP)
+	0x0017 00023 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	MOVQ	CX, main.message+96(SP)
+	0x001c 00028 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	MOVQ	BX, main.r+88(SP)
+	0x0021 00033 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	MOVQ	AX, main.r+80(SP)
+	0x0026 00038 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	PCDATA	$3, $-1
+	0x0026 00038 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	LEAQ	type:uint8(SB), AX
+	0x002d 00045 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	MOVL	$4, BX
+	0x0032 00050 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	MOVQ	BX, CX
+	0x0035 00053 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	PCDATA	$1, $0
+	0x0035 00053 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	CALL	runtime.makeslice(SB)
+	0x003a 00058 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:32)	MOVQ	AX, main..autotmp_57+56(SP)
+	0x003f 00063 (<unknown line number>)	NOP
+	0x003f 00063 (/usr/lib/go/src/io/io.go:354)	MOVQ	main.r+88(SP), BX
+	0x0044 00068 (/usr/lib/go/src/io/io.go:354)	MOVQ	AX, CX
+	0x0047 00071 (/usr/lib/go/src/io/io.go:354)	MOVL	$4, DI
+	0x004c 00076 (/usr/lib/go/src/io/io.go:354)	MOVQ	DI, SI
+	0x004f 00079 (/usr/lib/go/src/io/io.go:354)	MOVQ	SI, R8
+	0x0052 00082 (/usr/lib/go/src/io/io.go:354)	MOVQ	main.r+80(SP), AX
+	0x0057 00087 (/usr/lib/go/src/io/io.go:354)	PCDATA	$1, $1
+	0x0057 00087 (/usr/lib/go/src/io/io.go:354)	CALL	io.ReadAtLeast(SB)
+	0x005c 00092 (/usr/lib/go/src/io/io.go:354)	NOP
+	0x0060 00096 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	TESTQ	BX, BX
+	0x0063 00099 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:33)	JNE	218
+	0x0065 00101 (/usr/lib/go/src/encoding/binary/binary.go:92)	MOVQ	main..autotmp_57+56(SP), DX
+	0x006a 00106 (/usr/lib/go/src/encoding/binary/binary.go:92)	MOVL	(DX), CX
+	0x006c 00108 (/usr/lib/go/src/encoding/binary/binary.go:92)	MOVQ	CX, main..autotmp_58+48(SP)
+	0x0071 00113 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:36)	XCHGL	AX, AX
+	0x0072 00114 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	LEAQ	type:uint8(SB), AX
+	0x0079 00121 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	MOVQ	CX, BX
+	0x007c 00124 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	PCDATA	$1, $0
+	0x007c 00124 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	NOP
+	0x0080 00128 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	CALL	runtime.makeslice(SB)
+	0x0085 00133 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:38)	MOVQ	AX, main..autotmp_57+56(SP)
+	0x008a 00138 (<unknown line number>)	NOP
+	0x008a 00138 (/usr/lib/go/src/io/io.go:354)	MOVQ	main.r+88(SP), BX
+	0x008f 00143 (/usr/lib/go/src/io/io.go:354)	MOVQ	AX, CX
+	0x0092 00146 (/usr/lib/go/src/io/io.go:354)	MOVQ	main..autotmp_58+48(SP), DI
+	0x0097 00151 (/usr/lib/go/src/io/io.go:354)	MOVQ	DI, SI
+	0x009a 00154 (/usr/lib/go/src/io/io.go:354)	MOVQ	SI, R8
+	0x009d 00157 (/usr/lib/go/src/io/io.go:354)	MOVQ	main.r+80(SP), AX
+	0x00a2 00162 (/usr/lib/go/src/io/io.go:354)	PCDATA	$1, $2
+	0x00a2 00162 (/usr/lib/go/src/io/io.go:354)	CALL	io.ReadAtLeast(SB)
+	0x00a7 00167 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:39)	TESTQ	BX, BX
+	0x00aa 00170 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:39)	JEQ	184
+	0x00ac 00172 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:40)	MOVQ	BX, AX
+	0x00af 00175 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:40)	MOVQ	CX, BX
+	0x00b2 00178 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:40)	ADDQ	$64, SP
+	0x00b6 00182 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:40)	POPQ	BP
+	0x00b7 00183 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:40)	RET
+	0x00b8 00184 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	MOVQ	main..autotmp_57+56(SP), AX
+	0x00bd 00189 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	MOVQ	main..autotmp_58+48(SP), BX
+	0x00c2 00194 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	MOVQ	BX, CX
+	0x00c5 00197 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	MOVQ	main.message+96(SP), DI
+	0x00ca 00202 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	MOVQ	main.message+104(SP), SI
+	0x00cf 00207 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	PCDATA	$1, $3
+	0x00cf 00207 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	CALL	encoding/json.Unmarshal(SB)
+	0x00d4 00212 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	ADDQ	$64, SP
+	0x00d8 00216 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	POPQ	BP
+	0x00d9 00217 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:43)	RET
+	0x00da 00218 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	MOVQ	BX, AX
+	0x00dd 00221 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	MOVQ	CX, BX
+	0x00e0 00224 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	ADDQ	$64, SP
+	0x00e4 00228 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	POPQ	BP
+	0x00e5 00229 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	RET
+	0x00e6 00230 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:34)	NOP
+	0x00e6 00230 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$1, $-1
+	0x00e6 00230 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$0, $-2
+	0x00e6 00230 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	AX, 8(SP)
+	0x00eb 00235 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	BX, 16(SP)
+	0x00f0 00240 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	CX, 24(SP)
+	0x00f5 00245 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	DI, 32(SP)
+	0x00fa 00250 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	CALL	runtime.morestack_noctxt(SB)
+	0x00ff 00255 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	PCDATA	$0, $-1
+	0x00ff 00255 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	8(SP), AX
+	0x0104 00260 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	16(SP), BX
+	0x0109 00265 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	24(SP), CX
+	0x010e 00270 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	MOVQ	32(SP), DI
+	0x0113 00275 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:31)	JMP	0
+	0x0000 49 3b 66 10 0f 86 dc 00 00 00 55 48 89 e5 48 83  I;f.......UH..H.
+	0x0010 ec 40 48 89 7c 24 68 48 89 4c 24 60 48 89 5c 24  .@H.|$hH.L$`H.\$
+	0x0020 58 48 89 44 24 50 48 8d 05 00 00 00 00 bb 04 00  XH.D$PH.........
+	0x0030 00 00 48 89 d9 e8 00 00 00 00 48 89 44 24 38 48  ..H.......H.D$8H
+	0x0040 8b 5c 24 58 48 89 c1 bf 04 00 00 00 48 89 fe 49  .\$XH.......H..I
+	0x0050 89 f0 48 8b 44 24 50 e8 00 00 00 00 0f 1f 40 00  ..H.D$P.......@.
+	0x0060 48 85 db 75 75 48 8b 54 24 38 8b 0a 48 89 4c 24  H..uuH.T$8..H.L$
+	0x0070 30 90 48 8d 05 00 00 00 00 48 89 cb 0f 1f 40 00  0.H......H....@.
+	0x0080 e8 00 00 00 00 48 89 44 24 38 48 8b 5c 24 58 48  .....H.D$8H.\$XH
+	0x0090 89 c1 48 8b 7c 24 30 48 89 fe 49 89 f0 48 8b 44  ..H.|$0H..I..H.D
+	0x00a0 24 50 e8 00 00 00 00 48 85 db 74 0c 48 89 d8 48  $P.....H..t.H..H
+	0x00b0 89 cb 48 83 c4 40 5d c3 48 8b 44 24 38 48 8b 5c  ..H..@].H.D$8H.\
+	0x00c0 24 30 48 89 d9 48 8b 7c 24 60 48 8b 74 24 68 e8  $0H..H.|$`H.t$h.
+	0x00d0 00 00 00 00 48 83 c4 40 5d c3 48 89 d8 48 89 cb  ....H..@].H..H..
+	0x00e0 48 83 c4 40 5d c3 48 89 44 24 08 48 89 5c 24 10  H..@].H.D$.H.\$.
+	0x00f0 48 89 4c 24 18 48 89 7c 24 20 e8 00 00 00 00 48  H.L$.H.|$ .....H
+	0x0100 8b 44 24 08 48 8b 5c 24 10 48 8b 4c 24 18 48 8b  .D$.H.\$.H.L$.H.
+	0x0110 7c 24 20 e9 e8 fe ff ff                          |$ .....
+	rel 41+4 t=R_PCREL type:uint8+0
+	rel 54+4 t=R_CALL runtime.makeslice+0
+	rel 88+4 t=R_CALL io.ReadAtLeast+0
+	rel 117+4 t=R_PCREL type:uint8+0
+	rel 129+4 t=R_CALL runtime.makeslice+0
+	rel 163+4 t=R_CALL io.ReadAtLeast+0
+	rel 208+4 t=R_CALL encoding/json.Unmarshal+0
+	rel 251+4 t=R_CALL runtime.morestack_noctxt+0
+main.main STEXT size=83 args=0x0 locals=0x40 funcid=0x0 align=0x0
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	TEXT	main.main(SB), ABIInternal, $64-0
+	0x0000 00000 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	CMPQ	SP, 16(R14)
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PCDATA	$0, $-2
+	0x0004 00004 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	JLS	76
+	0x0006 00006 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PCDATA	$0, $-1
+	0x0006 00006 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PUSHQ	BP
+	0x0007 00007 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	MOVQ	SP, BP
+	0x000a 00010 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	SUBQ	$56, SP
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	FUNCDATA	$0, gclocals·FzY36IO2mY0y4dZ1+Izd/w==(SB)
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	FUNCDATA	$1, gclocals·ynuM6ptGWxUYldU3ztZ9GQ==(SB)
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	FUNCDATA	$2, main.main.stkobj(SB)
+	0x000e 00014 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:47)	LEAQ	type:string(SB), DX
+	0x0015 00021 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:47)	MOVQ	DX, main..autotmp_8+40(SP)
+	0x001a 00026 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:47)	LEAQ	main..stmp_0(SB), DX
+	0x0021 00033 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:47)	MOVQ	DX, main..autotmp_8+48(SP)
+	0x0026 00038 (/usr/lib/go/src/fmt/print.go:314)	MOVQ	os.Stdout(SB), BX
+	0x002d 00045 (<unknown line number>)	NOP
+	0x002d 00045 (/usr/lib/go/src/fmt/print.go:314)	LEAQ	go:itab.*os.File,io.Writer(SB), AX
+	0x0034 00052 (/usr/lib/go/src/fmt/print.go:314)	LEAQ	main..autotmp_8+40(SP), CX
+	0x0039 00057 (/usr/lib/go/src/fmt/print.go:314)	MOVL	$1, DI
+	0x003e 00062 (/usr/lib/go/src/fmt/print.go:314)	MOVQ	DI, SI
+	0x0041 00065 (/usr/lib/go/src/fmt/print.go:314)	PCDATA	$1, $0
+	0x0041 00065 (/usr/lib/go/src/fmt/print.go:314)	CALL	fmt.Fprintln(SB)
+	0x0046 00070 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:48)	ADDQ	$56, SP
+	0x004a 00074 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:48)	POPQ	BP
+	0x004b 00075 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:48)	RET
+	0x004c 00076 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:48)	NOP
+	0x004c 00076 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PCDATA	$1, $-1
+	0x004c 00076 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PCDATA	$0, $-2
+	0x004c 00076 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	CALL	runtime.morestack_noctxt(SB)
+	0x0051 00081 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	PCDATA	$0, $-1
+	0x0051 00081 (/home/mtakagi/wrk/rofi-chrome-tab/go/main.go:46)	JMP	0
+	0x0000 49 3b 66 10 76 46 55 48 89 e5 48 83 ec 38 48 8d  I;f.vFUH..H..8H.
+	0x0010 15 00 00 00 00 48 89 54 24 28 48 8d 15 00 00 00  .....H.T$(H.....
+	0x0020 00 48 89 54 24 30 48 8b 1d 00 00 00 00 48 8d 05  .H.T$0H......H..
+	0x0030 00 00 00 00 48 8d 4c 24 28 bf 01 00 00 00 48 89  ....H.L$(.....H.
+	0x0040 fe e8 00 00 00 00 48 83 c4 38 5d c3 e8 00 00 00  ......H..8].....
+	0x0050 00 eb ad                                         ...
+	rel 2+0 t=R_USEIFACE type:string+0
+	rel 2+0 t=R_USEIFACE type:*os.File+0
+	rel 17+4 t=R_PCREL type:string+0
+	rel 29+4 t=R_PCREL main..stmp_0+0
+	rel 41+4 t=R_PCREL os.Stdout+0
+	rel 48+4 t=R_PCREL go:itab.*os.File,io.Writer+0
+	rel 66+4 t=R_CALL fmt.Fprintln+0
+	rel 77+4 t=R_CALL runtime.morestack_noctxt+0
+type:.eq.sync/atomic.Pointer[os.dirInfo] STEXT dupok nosplit size=10 args=0x10 locals=0x0 funcid=0x0 align=0x0
+	0x0000 00000 (<autogenerated>:1)	TEXT	type:.eq.sync/atomic.Pointer[os.dirInfo](SB), DUPOK|NOSPLIT|NOFRAME|ABIInternal, $0-16
+	0x0000 00000 (<autogenerated>:1)	FUNCDATA	$0, gclocals·rJbr+btbFJy3NLIRCgNSZQ==(SB)
+	0x0000 00000 (<autogenerated>:1)	FUNCDATA	$1, gclocals·ISb46fRPFoZ9pIfykFK/kQ==(SB)
+	0x0000 00000 (<autogenerated>:1)	FUNCDATA	$5, type:.eq.sync/atomic.Pointer[os.dirInfo].arginfo1(SB)
+	0x0000 00000 (<autogenerated>:1)	FUNCDATA	$6, type:.eq.sync/atomic.Pointer[os.dirInfo].argliveinfo(SB)
+	0x0000 00000 (<autogenerated>:1)	PCDATA	$3, $1
+	0x0000 00000 (<autogenerated>:1)	MOVQ	(AX), CX
+	0x0003 00003 (<autogenerated>:1)	CMPQ	(BX), CX
+	0x0006 00006 (<autogenerated>:1)	SETEQ	AL
+	0x0009 00009 (<autogenerated>:1)	RET
+	0x0000 48 8b 08 48 39 0b 0f 94 c0 c3                    H..H9.....
+go:cuinfo.producer.main SDWARFCUINFO dupok size=0
+	0x0000 72 65 67 61 62 69                                regabi
+go:cuinfo.packagename.main SDWARFCUINFO dupok size=0
+	0x0000 6d 61 69 6e                                      main
+go:info.encoding/binary.littleEndian.PutUint32$abstract SDWARFABSFCN dupok size=60
+	0x0000 05 65 6e 63 6f 64 69 6e 67 2f 62 69 6e 61 72 79  .encoding/binary
+	0x0010 2e 6c 69 74 74 6c 65 45 6e 64 69 61 6e 2e 50 75  .littleEndian.Pu
+	0x0020 74 55 69 6e 74 33 32 00 01 60 01 22 62 00 00 00  tUint32..`."b...
+	0x0030 00 00 00 22 76 00 00 00 00 00 00 00              ..."v.......
+	rel 0+0 t=R_USETYPE type:[]uint8+0
+	rel 0+0 t=R_USETYPE type:encoding/binary.littleEndian+0
+	rel 0+0 t=R_USETYPE type:uint32+0
+	rel 47+4 t=R_DWARFSECREF go:info.[]uint8+0
+	rel 55+4 t=R_DWARFSECREF go:info.uint32+0
+go:info.io.ReadFull$abstract SDWARFABSFCN dupok size=54
+	0x0000 05 69 6f 2e 52 65 61 64 46 75 6c 6c 00 01 e1 02  .io.ReadFull....
+	0x0010 01 22 72 00 00 00 00 00 00 22 62 75 66 00 00 00  ."r......"buf...
+	0x0020 00 00 00 22 6e 00 01 00 00 00 00 22 65 72 72 00  ..."n......"err.
+	0x0030 01 00 00 00 00 00                                ......
+	rel 0+0 t=R_USETYPE type:[]uint8+0
+	rel 0+0 t=R_USETYPE type:error+0
+	rel 0+0 t=R_USETYPE type:int+0
+	rel 0+0 t=R_USETYPE type:io.Reader+0
+	rel 21+4 t=R_DWARFSECREF go:info.io.Reader+0
+	rel 31+4 t=R_DWARFSECREF go:info.[]uint8+0
+	rel 39+4 t=R_DWARFSECREF go:info.int+0
+	rel 49+4 t=R_DWARFSECREF go:info.error+0
+go:info.encoding/binary.littleEndian.Uint32$abstract SDWARFABSFCN dupok size=49
+	0x0000 05 65 6e 63 6f 64 69 6e 67 2f 62 69 6e 61 72 79  .encoding/binary
+	0x0010 2e 6c 69 74 74 6c 65 45 6e 64 69 61 6e 2e 55 69  .littleEndian.Ui
+	0x0020 6e 74 33 32 00 01 5a 01 22 62 00 00 00 00 00 00  nt32..Z."b......
+	0x0030 00                                               .
+	rel 0+0 t=R_USETYPE type:[]uint8+0
+	rel 0+0 t=R_USETYPE type:encoding/binary.littleEndian+0
+	rel 0+0 t=R_USETYPE type:uint32+0
+	rel 44+4 t=R_DWARFSECREF go:info.[]uint8+0
+go:info.fmt.Println$abstract SDWARFABSFCN dupok size=44
+	0x0000 05 66 6d 74 2e 50 72 69 6e 74 6c 6e 00 01 b9 02  .fmt.Println....
+	0x0010 01 22 61 00 00 00 00 00 00 22 6e 00 01 00 00 00  ."a......"n.....
+	0x0020 00 22 65 72 72 00 01 00 00 00 00 00              ."err.......
+	rel 0+0 t=R_USETYPE type:[]interface {}+0
+	rel 0+0 t=R_USETYPE type:error+0
+	rel 0+0 t=R_USETYPE type:int+0
+	rel 21+4 t=R_DWARFSECREF go:info.[]interface {}+0
+	rel 29+4 t=R_DWARFSECREF go:info.int+0
+	rel 39+4 t=R_DWARFSECREF go:info.error+0
+go:itab.*os.File,io.Writer SRODATA dupok size=32
+	0x0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0010 c1 d7 bc cc 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	rel 0+8 t=R_ADDR type:io.Writer+0
+	rel 8+8 t=R_ADDR type:*os.File+0
+	rel 24+8 t=RelocType(-32767) os.(*File).Write+0
+sync/atomic..dict.Pointer[os.dirInfo] SRODATA dupok size=128
+	0x0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0010 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0050 00 00 00 00 00 00 00 00                          ........
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:unsafe.Pointer+0
+	rel 0+0 t=R_USEIFACE type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 0+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:unsafe.Pointer+0
+	rel 0+0 t=R_USEIFACE type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 0+0 t=R_USEIFACE type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 0+0 t=R_USEIFACE type:unsafe.Pointer+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 0+0 t=R_USEIFACE type:unsafe.Pointer+0
+	rel 0+0 t=R_USEIFACE type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 0+0 t=R_USEIFACE type:unsafe.Pointer+0
+	rel 0+0 t=R_USEIFACE type:*os.dirInfo+0
+	rel 8+8 t=R_ADDR type:*os.dirInfo+0
+	rel 16+8 t=R_ADDR type:*os.dirInfo+0
+	rel 24+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 32+8 t=R_ADDR type:*os.dirInfo+0
+	rel 40+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 48+8 t=R_ADDR type:*os.dirInfo+0
+	rel 56+8 t=R_ADDR type:*os.dirInfo+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+	rel 72+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 80+8 t=R_ADDR type:*os.dirInfo+0
+main..inittask SNOPTRDATA size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+0 t=R_INITORDER encoding/binary..inittask+0
+	rel 0+0 t=R_INITORDER encoding/json..inittask+0
+	rel 0+0 t=R_INITORDER fmt..inittask+0
+	rel 0+0 t=R_INITORDER io..inittask+0
+runtime.memequal64·f SRODATA dupok size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+8 t=R_ADDR runtime.memequal64+0
+runtime.gcbits.0100000000000000 SRODATA dupok size=8
+	0x0000 01 00 00 00 00 00 00 00                          ........
+type:.namedata.*atomic.Pointer[os.dirInfo]. SRODATA dupok size=29
+	0x0000 01 1b 2a 61 74 6f 6d 69 63 2e 50 6f 69 6e 74 65  ..*atomic.Pointe
+	0x0010 72 5b 6f 73 2e 64 69 72 49 6e 66 6f 5d           r[os.dirInfo]
+type:.eqfunc.sync/atomic.Pointer[os.dirInfo] SRODATA dupok size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+8 t=R_ADDR type:.eq.sync/atomic.Pointer[os.dirInfo]+0
+runtime.memequal0·f SRODATA dupok size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+8 t=R_ADDR runtime.memequal0+0
+type:.namedata.*[0]*os.dirInfo- SRODATA dupok size=17
+	0x0000 00 0f 2a 5b 30 5d 2a 6f 73 2e 64 69 72 49 6e 66  ..*[0]*os.dirInf
+	0x0010 6f                                               o
+type:*[0]*os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 a6 08 19 82 08 08 08 36 00 00 00 00 00 00 00 00  .......6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[0]*os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:[0]*os.dirInfo+0
+runtime.gcbits. SRODATA dupok size=0
+type:.namedata.*[]*os.dirInfo- SRODATA dupok size=16
+	0x0000 00 0e 2a 5b 5d 2a 6f 73 2e 64 69 72 49 6e 66 6f  ..*[]*os.dirInfo
+type:*[]*os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 9d 8a 6c 8a 08 08 08 36 00 00 00 00 00 00 00 00  ..l....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[]*os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:[]*os.dirInfo+0
+type:[]*os.dirInfo SRODATA dupok size=56
+	0x0000 18 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 55 53 05 41 02 08 08 17 00 00 00 00 00 00 00 00  US.A............
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[]*os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*[]*os.dirInfo+0
+	rel 48+8 t=R_ADDR type:*os.dirInfo+0
+type:[0]*os.dirInfo SRODATA dupok size=72
+	0x0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0010 64 82 13 1a 0a 08 08 11 00 00 00 00 00 00 00 00  d...............
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal0·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[0]*os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*[0]*os.dirInfo+0
+	rel 48+8 t=R_ADDR type:*os.dirInfo+0
+	rel 56+8 t=R_ADDR type:[]*os.dirInfo+0
+type:.importpath.sync/atomic. SRODATA dupok size=13
+	0x0000 00 0b 73 79 6e 63 2f 61 74 6f 6d 69 63           ..sync/atomic
+type:.namedata._- SRODATA dupok size=3
+	0x0000 00 01 5f                                         .._
+type:.namedata.v- SRODATA dupok size=3
+	0x0000 00 01 76                                         ..v
+type:sync/atomic.Pointer[os.dirInfo] SRODATA dupok size=168
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 96 c3 42 f6 07 08 08 19 00 00 00 00 00 00 00 00  ..B.............
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 03 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00  ................
+	0x0050 00 00 00 00 00 00 00 00 58 00 00 00 00 00 00 00  ........X.......
+	0x0060 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0070 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0080 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0090 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x00a0 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR type:.eqfunc.sync/atomic.Pointer[os.dirInfo]+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*atomic.Pointer[os.dirInfo].+0
+	rel 44+4 t=R_ADDROFF type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 48+8 t=R_ADDR type:.importpath.sync/atomic.+0
+	rel 56+8 t=R_ADDR type:sync/atomic.Pointer[os.dirInfo]+96
+	rel 80+4 t=R_ADDROFF type:.importpath.sync/atomic.+0
+	rel 96+8 t=R_ADDR type:.namedata._-+0
+	rel 104+8 t=R_ADDR type:[0]*os.dirInfo+0
+	rel 120+8 t=R_ADDR type:.namedata._-+0
+	rel 128+8 t=R_ADDR type:sync/atomic.noCopy+0
+	rel 144+8 t=R_ADDR type:.namedata.v-+0
+	rel 152+8 t=R_ADDR type:unsafe.Pointer+0
+type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool- SRODATA dupok size=67
+	0x0000 00 41 2a 66 75 6e 63 28 2a 61 74 6f 6d 69 63 2e  .A*func(*atomic.
+	0x0010 50 6f 69 6e 74 65 72 5b 6f 73 2e 64 69 72 49 6e  Pointer[os.dirIn
+	0x0020 66 6f 5d 2c 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  fo], *os.dirInfo
+	0x0030 2c 20 2a 6f 73 2e 64 69 72 49 6e 66 6f 29 20 62  , *os.dirInfo) b
+	0x0040 6f 6f 6c                                         ool
+type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 fe 18 d0 29 08 08 08 36 00 00 00 00 00 00 00 00  ...)...6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool-+0
+	rel 48+8 t=R_ADDR type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool+0
+type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool SRODATA dupok size=88
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 b9 bc ac c6 02 08 08 33 00 00 00 00 00 00 00 00  .......3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 03 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0050 00 00 00 00 00 00 00 00                          ........
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo, *os.dirInfo) bool+0
+	rel 56+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+	rel 72+8 t=R_ADDR type:*os.dirInfo+0
+	rel 80+8 t=R_ADDR type:bool+0
+type:.namedata.*func(*atomic.Pointer[os.dirInfo]) *os.dirInfo- SRODATA dupok size=48
+	0x0000 00 2e 2a 66 75 6e 63 28 2a 61 74 6f 6d 69 63 2e  ..*func(*atomic.
+	0x0010 50 6f 69 6e 74 65 72 5b 6f 73 2e 64 69 72 49 6e  Pointer[os.dirIn
+	0x0020 66 6f 5d 29 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  fo]) *os.dirInfo
+type:*func(*sync/atomic.Pointer[os.dirInfo]) *os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 59 bb 31 13 08 08 08 36 00 00 00 00 00 00 00 00  Y.1....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo]) *os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:func(*sync/atomic.Pointer[os.dirInfo]) *os.dirInfo+0
+type:func(*sync/atomic.Pointer[os.dirInfo]) *os.dirInfo SRODATA dupok size=72
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 d5 d6 af 2f 02 08 08 33 00 00 00 00 00 00 00 00  .../...3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00                          ........
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo]) *os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*sync/atomic.Pointer[os.dirInfo]) *os.dirInfo+0
+	rel 56+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo)- SRODATA dupok size=49
+	0x0000 00 2f 2a 66 75 6e 63 28 2a 61 74 6f 6d 69 63 2e  ./*func(*atomic.
+	0x0010 50 6f 69 6e 74 65 72 5b 6f 73 2e 64 69 72 49 6e  Pointer[os.dirIn
+	0x0020 66 6f 5d 2c 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  fo], *os.dirInfo
+	0x0030 29                                               )
+type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 73 91 45 a4 08 08 08 36 00 00 00 00 00 00 00 00  s.E....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo)-+0
+	rel 48+8 t=R_ADDR type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo)+0
+type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) SRODATA dupok size=72
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 a7 d9 da 27 02 08 08 33 00 00 00 00 00 00 00 00  ...'...3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00                          ........
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo)-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo)+0
+	rel 56+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo- SRODATA dupok size=61
+	0x0000 00 3b 2a 66 75 6e 63 28 2a 61 74 6f 6d 69 63 2e  .;*func(*atomic.
+	0x0010 50 6f 69 6e 74 65 72 5b 6f 73 2e 64 69 72 49 6e  Pointer[os.dirIn
+	0x0020 66 6f 5d 2c 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  fo], *os.dirInfo
+	0x0030 29 20 2a 6f 73 2e 64 69 72 49 6e 66 6f           ) *os.dirInfo
+type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 46 0b cc 77 08 08 08 36 00 00 00 00 00 00 00 00  F..w...6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo+0
+type:func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo SRODATA dupok size=80
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 3a 47 9e 50 02 08 08 33 00 00 00 00 00 00 00 00  :G.P...3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 02 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*sync/atomic.Pointer[os.dirInfo], *os.dirInfo) *os.dirInfo+0
+	rel 56+8 t=R_ADDR type:*sync/atomic.Pointer[os.dirInfo]+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+	rel 72+8 t=R_ADDR type:*os.dirInfo+0
+type:.namedata.CompareAndSwap. SRODATA dupok size=16
+	0x0000 01 0e 43 6f 6d 70 61 72 65 41 6e 64 53 77 61 70  ..CompareAndSwap
+type:.namedata.*func(*os.dirInfo, *os.dirInfo) bool- SRODATA dupok size=38
+	0x0000 00 24 2a 66 75 6e 63 28 2a 6f 73 2e 64 69 72 49  .$*func(*os.dirI
+	0x0010 6e 66 6f 2c 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  nfo, *os.dirInfo
+	0x0020 29 20 62 6f 6f 6c                                ) bool
+type:*func(*os.dirInfo, *os.dirInfo) bool SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 5e 6b 53 61 08 08 08 36 00 00 00 00 00 00 00 00  ^kSa...6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo, *os.dirInfo) bool-+0
+	rel 48+8 t=R_ADDR type:func(*os.dirInfo, *os.dirInfo) bool+0
+type:func(*os.dirInfo, *os.dirInfo) bool SRODATA dupok size=80
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 48 9c 04 10 02 08 08 33 00 00 00 00 00 00 00 00  H......3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 02 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo, *os.dirInfo) bool-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*os.dirInfo, *os.dirInfo) bool+0
+	rel 56+8 t=R_ADDR type:*os.dirInfo+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+	rel 72+8 t=R_ADDR type:bool+0
+type:.namedata.Load. SRODATA dupok size=6
+	0x0000 01 04 4c 6f 61 64                                ..Load
+type:.namedata.*func() *os.dirInfo- SRODATA dupok size=21
+	0x0000 00 13 2a 66 75 6e 63 28 29 20 2a 6f 73 2e 64 69  ..*func() *os.di
+	0x0010 72 49 6e 66 6f                                   rInfo
+type:*func() *os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 9f 33 b3 3d 08 08 08 36 00 00 00 00 00 00 00 00  .3.=...6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func() *os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:func() *os.dirInfo+0
+type:func() *os.dirInfo SRODATA dupok size=64
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 e2 f6 62 43 02 08 08 33 00 00 00 00 00 00 00 00  ..bC...3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func() *os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*func() *os.dirInfo+0
+	rel 56+8 t=R_ADDR type:*os.dirInfo+0
+type:.namedata.Store. SRODATA dupok size=7
+	0x0000 01 05 53 74 6f 72 65                             ..Store
+type:.namedata.*func(*os.dirInfo)- SRODATA dupok size=20
+	0x0000 00 12 2a 66 75 6e 63 28 2a 6f 73 2e 64 69 72 49  ..*func(*os.dirI
+	0x0010 6e 66 6f 29                                      nfo)
+type:*func(*os.dirInfo) SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 bc 37 80 49 08 08 08 36 00 00 00 00 00 00 00 00  .7.I...6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo)-+0
+	rel 48+8 t=R_ADDR type:func(*os.dirInfo)+0
+type:func(*os.dirInfo) SRODATA dupok size=64
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 0f ea 90 93 02 08 08 33 00 00 00 00 00 00 00 00  .......3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo)-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*os.dirInfo)+0
+	rel 56+8 t=R_ADDR type:*os.dirInfo+0
+type:.namedata.Swap. SRODATA dupok size=6
+	0x0000 01 04 53 77 61 70                                ..Swap
+type:.namedata.*func(*os.dirInfo) *os.dirInfo- SRODATA dupok size=32
+	0x0000 00 1e 2a 66 75 6e 63 28 2a 6f 73 2e 64 69 72 49  ..*func(*os.dirI
+	0x0010 6e 66 6f 29 20 2a 6f 73 2e 64 69 72 49 6e 66 6f  nfo) *os.dirInfo
+type:*func(*os.dirInfo) *os.dirInfo SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 ab 76 75 e5 08 08 08 36 00 00 00 00 00 00 00 00  .vu....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo) *os.dirInfo-+0
+	rel 48+8 t=R_ADDR type:func(*os.dirInfo) *os.dirInfo+0
+type:func(*os.dirInfo) *os.dirInfo SRODATA dupok size=72
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 63 31 bc d9 02 08 08 33 00 00 00 00 00 00 00 00  c1.....3........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 00 00 00 00 00 00 00 00                          ........
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*func(*os.dirInfo) *os.dirInfo-+0
+	rel 44+4 t=RelocType(-32763) type:*func(*os.dirInfo) *os.dirInfo+0
+	rel 56+8 t=R_ADDR type:*os.dirInfo+0
+	rel 64+8 t=R_ADDR type:*os.dirInfo+0
+type:*sync/atomic.Pointer[os.dirInfo] SRODATA dupok size=136
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 53 db c0 f4 09 08 08 36 00 00 00 00 00 00 00 00  S......6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 04 00 04 00  ................
+	0x0040 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0050 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0060 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0070 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0080 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*atomic.Pointer[os.dirInfo].+0
+	rel 48+8 t=R_ADDR type:sync/atomic.Pointer[os.dirInfo]+0
+	rel 56+4 t=R_ADDROFF type:.importpath.sync/atomic.+0
+	rel 72+4 t=R_ADDROFF type:.namedata.CompareAndSwap.+0
+	rel 76+4 t=R_METHODOFF type:func(*os.dirInfo, *os.dirInfo) bool+0
+	rel 80+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).CompareAndSwap+0
+	rel 84+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).CompareAndSwap+0
+	rel 88+4 t=R_ADDROFF type:.namedata.Load.+0
+	rel 92+4 t=R_METHODOFF type:func() *os.dirInfo+0
+	rel 96+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Load+0
+	rel 100+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Load+0
+	rel 104+4 t=R_ADDROFF type:.namedata.Store.+0
+	rel 108+4 t=R_METHODOFF type:func(*os.dirInfo)+0
+	rel 112+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Store+0
+	rel 116+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Store+0
+	rel 120+4 t=R_ADDROFF type:.namedata.Swap.+0
+	rel 124+4 t=R_METHODOFF type:func(*os.dirInfo) *os.dirInfo+0
+	rel 128+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Swap+0
+	rel 132+4 t=R_METHODOFF sync/atomic.(*Pointer[os.dirInfo]).Swap+0
+go:string."Hello, Go!" SRODATA dupok size=10
+	0x0000 48 65 6c 6c 6f 2c 20 47 6f 21                    Hello, Go!
+main..stmp_0 SRODATA static size=16
+	0x0000 00 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00  ................
+	rel 0+8 t=R_ADDR go:string."Hello, Go!"+0
+type:.namedata.*[4]uint8- SRODATA dupok size=11
+	0x0000 00 09 2a 5b 34 5d 75 69 6e 74 38                 ..*[4]uint8
+runtime.memequal32·f SRODATA dupok size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+8 t=R_ADDR runtime.memequal32+0
+type:[4]uint8 SRODATA dupok size=72
+	0x0000 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0010 0a 56 ca d0 0a 01 01 11 00 00 00 00 00 00 00 00  .V..............
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 04 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal32·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[4]uint8-+0
+	rel 44+4 t=RelocType(-32763) type:*[4]uint8+0
+	rel 48+8 t=R_ADDR type:uint8+0
+	rel 56+8 t=R_ADDR type:[]uint8+0
+type:*[4]uint8 SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 cc 5a 4d de 08 08 08 36 00 00 00 00 00 00 00 00  .ZM....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[4]uint8-+0
+	rel 48+8 t=R_ADDR type:[4]uint8+0
+runtime.nilinterequal·f SRODATA dupok size=8
+	0x0000 00 00 00 00 00 00 00 00                          ........
+	rel 0+8 t=R_ADDR runtime.nilinterequal+0
+type:.namedata.*[1]interface {}- SRODATA dupok size=18
+	0x0000 00 10 2a 5b 31 5d 69 6e 74 65 72 66 61 63 65 20  ..*[1]interface 
+	0x0010 7b 7d                                            {}
+type:*[1]interface {} SRODATA dupok size=56
+	0x0000 08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+	0x0010 73 3b a6 1c 08 08 08 36 00 00 00 00 00 00 00 00  s;.....6........
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.memequal64·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0100000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[1]interface {}-+0
+	rel 48+8 t=R_ADDR type:[1]interface {}+0
+runtime.gcbits.0200000000000000 SRODATA dupok size=8
+	0x0000 02 00 00 00 00 00 00 00                          ........
+type:[1]interface {} SRODATA dupok size=72
+	0x0000 10 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00  ................
+	0x0010 ea 37 5e 5e 02 08 08 11 00 00 00 00 00 00 00 00  .7^^............
+	0x0020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0030 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+	0x0040 01 00 00 00 00 00 00 00                          ........
+	rel 24+8 t=R_ADDR runtime.nilinterequal·f+0
+	rel 32+8 t=R_ADDR runtime.gcbits.0200000000000000+0
+	rel 40+4 t=R_ADDROFF type:.namedata.*[1]interface {}-+0
+	rel 44+4 t=RelocType(-32763) type:*[1]interface {}+0
+	rel 48+8 t=R_ADDR type:interface {}+0
+	rel 56+8 t=R_ADDR type:[]interface {}+0
+gclocals·CdaV7t8dQnZWH74m3yJYCA== SRODATA dupok size=12
+	0x0000 04 00 00 00 04 00 00 00 0a 02 02 00              ............
+gclocals·MQ6CtnXyVuJSavzXa6T6ng== SRODATA dupok size=12
+	0x0000 04 00 00 00 01 00 00 00 00 00 01 00              ............
+main.SendMessage.arginfo1 SRODATA static dupok size=13
+	0x0000 fe 00 08 08 08 fd fe 10 08 18 08 fd ff           .............
+main.SendMessage.argliveinfo SRODATA static dupok size=3
+	0x0000 00 00 03                                         ...
+gclocals·VdvRTWP1EtLl57Vjm5yzBg== SRODATA dupok size=12
+	0x0000 04 00 00 00 04 00 00 00 0a 0a 08 00              ............
+gclocals·E5rnZV/9Vbt7Gxv9kj5fSw== SRODATA dupok size=12
+	0x0000 04 00 00 00 01 00 00 00 00 01 01 00              ............
+main.RecvMessage.arginfo1 SRODATA static dupok size=13
+	0x0000 fe 00 08 08 08 fd fe 10 08 18 08 fd ff           .............
+main.RecvMessage.argliveinfo SRODATA static dupok size=2
+	0x0000 00 00                                            ..
+gclocals·FzY36IO2mY0y4dZ1+Izd/w== SRODATA dupok size=8
+	0x0000 01 00 00 00 00 00 00 00                          ........
+gclocals·ynuM6ptGWxUYldU3ztZ9GQ== SRODATA dupok size=9
+	0x0000 01 00 00 00 02 00 00 00 00                       .........
+main.main.stkobj SRODATA static size=24
+	0x0000 01 00 00 00 00 00 00 00 f0 ff ff ff 10 00 00 00  ................
+	0x0010 10 00 00 00 00 00 00 00                          ........
+	rel 20+4 t=R_ADDROFF runtime.gcbits.0200000000000000+0
+gclocals·rJbr+btbFJy3NLIRCgNSZQ== SRODATA dupok size=10
+	0x0000 02 00 00 00 02 00 00 00 03 00                    ..........
+gclocals·ISb46fRPFoZ9pIfykFK/kQ== SRODATA dupok size=8
+	0x0000 02 00 00 00 00 00 00 00                          ........
+type:.eq.sync/atomic.Pointer[os.dirInfo].arginfo1 SRODATA static dupok size=3
+	0x0000 08 08 ff                                         ...
+type:.eq.sync/atomic.Pointer[os.dirInfo].argliveinfo SRODATA static dupok size=2
+	0x0000 00 00                                            ..
