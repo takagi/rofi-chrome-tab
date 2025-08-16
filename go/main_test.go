@@ -48,7 +48,7 @@ func TestRecvEvent(t *testing.T) {
 
 	event := struct {
 		Type string `json:"type"`
-		Tabs []Tab `json:"tabs"`
+		Tabs []Tab  `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,

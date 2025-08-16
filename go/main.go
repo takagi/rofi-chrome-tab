@@ -10,16 +10,6 @@ import (
 	"os"
 )
 
-func init() {
-	logFile, err := os.OpenFile("/tmp/rofi_chrome_tab.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to open log file:", err)
-		os.Exit(1)
-	} else {
-		log.SetOutput(logFile)
-	}
-}
-
 // Actions
 
 type Action interface {
@@ -95,8 +85,7 @@ type UpdatedEvent struct {
 }
 
 func (ev *UpdatedEvent) Handle() error {
-	tabs = ev.Tabs
-	log.Printf("Updated tabs: %v", tabs)
+	inCh <- ev.Tabs
 	return nil
 }
 
@@ -127,27 +116,52 @@ func RecvEvent(r io.Reader) (Event, error) {
 	}
 
 	ev := ctor()
-	if err := json.Unmarshal(buf, &ev); err != nil {
+	if err := json.Unmarshal(buf, ev); err != nil {
 		return nil, err
 	}
 	return ev, nil
 }
 
-// Main
+// Commands
 
-var tabs []Tab
+func ParseCommand() {
+}
+
+// Tabs Store
+
+var (
+	inCh  = make(chan []Tab, 1)
+	outCh = make(chan chan []Tab, 1)
+)
+
+func pull[T any](ch chan chan T) T {
+	replyCh := make(chan T, 1)
+	ch <- replyCh
+	return <-replyCh
+}
+
+// Main
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	log.Printf("Updated tabs: %v", tabs)
+	log.Printf("Updated tabs: %v", pull(outCh))
 }
 
 func main() {
+	// Set up log file
+	logFile, err := os.OpenFile("/tmp/rofi_chrome_tab.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Failed to open log file:", err)
+		os.Exit(1)
+	} else {
+		log.SetOutput(logFile)
+	}
+
 	socketPath := "/tmp/rofi-chrome-tab.sock"
 
 	if err := os.RemoveAll(socketPath); err != nil {
-        log.Fatal(err)
-    }
+		log.Fatal(err)
+	}
 
 	// Receive events in a goroutine
 	go func() {
@@ -155,27 +169,45 @@ func main() {
 			ev, err := RecvEvent(os.Stdin)
 			if err != nil {
 				log.Println("Error receiving message:", err)
+				continue
 			}
 			ev.Handle()
 		}
 	}()
 
+	// Tabs manager
+	go func () {
+		copyTabs := func (tabs []Tab) []Tab {
+			cp := make([]Tab, len(tabs))
+			copy(cp, tabs)
+			return cp
+		}
+
+		var tabs []Tab
+		for {
+			select {
+			case ts := <-inCh:
+				tabs = copyTabs(ts)
+				log.Printf("Updated tabs: %v", tabs)
+			case replyCh := <-outCh:
+				replyCh <- copyTabs(tabs)
+			}
+		}
+	}()
+
 	lis, err := net.Listen("unix", socketPath)
-    if err != nil {
-        log.Fatal("listen error:", err)
-    }
-    defer lis.Close()
+	if err != nil {
+		log.Fatal("listen error:", err)
+	}
+	defer lis.Close()
 
 	for {
 		conn, err := lis.Accept()
 		if err != nil {
 			log.Println("accept error:", err)
-            continue
-        }
+			continue
+		}
 
-        go handleConnection(conn)
-    }
-
-
-	log.Println("Program finished.")
+		go handleConnection(conn)
+	}
 }
