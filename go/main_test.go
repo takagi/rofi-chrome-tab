@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-func TestSendCommand(t *testing.T) {
+func TestSendAction(t *testing.T) {
 	var buf bytes.Buffer
 
-	cmd := &SelectCommand{TabID: 42}
+	cmd := &SelectAction{TabID: 42}
 
-	err := SendCommand(&buf, cmd)
+	err := SendAction(&buf, cmd)
 	if err != nil {
-		t.Fatalf("SendCommand failed: %v", err)
+		t.Fatalf("SendAction failed: %v", err)
 	}
 
 	var length uint32

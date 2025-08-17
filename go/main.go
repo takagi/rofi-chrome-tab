@@ -85,7 +85,7 @@ type UpdatedEvent struct {
 }
 
 func (ev *UpdatedEvent) Handle() error {
-	inCh <- ev.Tabs
+	tabs = ev.Tabs // TODO: copy
 	return nil
 }
 
@@ -127,25 +127,13 @@ func RecvEvent(r io.Reader) (Event, error) {
 func ParseCommand() {
 }
 
-// Tabs Store
-
-var (
-	inCh  = make(chan []Tab, 1)
-	outCh = make(chan chan []Tab, 1)
-)
-
-func pull[T any](ch chan chan T) T {
-	replyCh := make(chan T, 1)
-	ch <- replyCh
-	return <-replyCh
-}
-
 // Main
 
-func handleConnection(conn net.Conn) {
-	defer conn.Close()
-	log.Printf("Updated tabs: %v", pull(outCh))
-}
+var (
+	tabs  []Tab
+	evCh  = make(chan Event, 1)
+	cmdCh = make(chan net.Conn, 1)
+)
 
 func main() {
 	// Set up log file
@@ -157,57 +145,54 @@ func main() {
 		log.SetOutput(logFile)
 	}
 
+	// Set up a socket file
 	socketPath := "/tmp/rofi-chrome-tab.sock"
-
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}
 
-	// Receive events in a goroutine
+	// Receive events from stdin
 	go func() {
 		for {
 			ev, err := RecvEvent(os.Stdin)
+			if err == io.EOF {
+				log.Println("stdin closed")
+				return
+			}
 			if err != nil {
 				log.Println("Error receiving message:", err)
 				continue
 			}
-			ev.Handle()
+			evCh <- ev
 		}
 	}()
 
-	// Tabs manager
-	go func () {
-		copyTabs := func (tabs []Tab) []Tab {
-			cp := make([]Tab, len(tabs))
-			copy(cp, tabs)
-			return cp
+	// Receive commands from an Unix domain socket
+	go func() {
+		lis, err := net.Listen("unix", socketPath)
+		if err != nil {
+			log.Fatal("listen error:", err)
 		}
+		defer lis.Close()
 
-		var tabs []Tab
 		for {
-			select {
-			case ts := <-inCh:
-				tabs = copyTabs(ts)
-				log.Printf("Updated tabs: %v", tabs)
-			case replyCh := <-outCh:
-				replyCh <- copyTabs(tabs)
+			conn, err := lis.Accept()
+			if err != nil {
+				log.Println("Accept error:", err)
+				continue
 			}
+
+			go func() {
+				defer conn.Close()
+				log.Printf("Updated tabs: %v", tabs)
+			}()
 		}
 	}()
-
-	lis, err := net.Listen("unix", socketPath)
-	if err != nil {
-		log.Fatal("listen error:", err)
-	}
-	defer lis.Close()
 
 	for {
-		conn, err := lis.Accept()
-		if err != nil {
-			log.Println("accept error:", err)
-			continue
+		select {
+		case ev := <-evCh:
+			ev.Handle()
 		}
-
-		go handleConnection(conn)
 	}
 }
