@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // Actions
@@ -124,7 +127,49 @@ func RecvEvent(r io.Reader) (Event, error) {
 
 // Commands
 
-func ParseCommand() {
+type Command interface {
+	Execute() error
+}
+
+func ParseCommand(line string) (Command, error) {
+	fields := strings.Fields(line)
+    if len(fields) == 0 {
+        return nil, fmt.Errorf("empty command")
+    }
+
+	switch fields[0] {
+	case "list":
+		return &ListCommand{}, nil
+    case "select":
+        if len(fields) < 2 {
+            return nil, fmt.Errorf("select command requires a TabID")
+        }
+
+		tabID, err := strconv.Atoi(fields[1])
+        if err != nil {
+            return nil, fmt.Errorf("invalid TabID: %s", fields[1])
+        }
+
+        return &SelectCommand{tabID: tabID}, nil
+    default:
+        return nil, fmt.Errorf("unknown command: %s", fields[0])
+    }
+}
+
+type ListCommand struct {}
+
+func (c *ListCommand) Execute() error {
+	// TODO
+	return nil
+}
+
+type SelectCommand struct {
+	tabID int
+}
+
+func (c *SelectCommand) Execute() error {
+	// TODO
+	return nil
 }
 
 // Main
@@ -132,7 +177,7 @@ func ParseCommand() {
 var (
 	tabs  []Tab
 	evCh  = make(chan Event, 1)
-	cmdCh = make(chan net.Conn, 1)
+	cmdCh = make(chan Command, 1)
 )
 
 func main() {
@@ -144,12 +189,7 @@ func main() {
 	} else {
 		log.SetOutput(logFile)
 	}
-
-	// Set up a socket file
-	socketPath := "/tmp/rofi-chrome-tab.sock"
-	if err := os.RemoveAll(socketPath); err != nil {
-		log.Fatal(err)
-	}
+	defer logFile.Close()
 
 	// Receive events from stdin
 	go func() {
@@ -167,6 +207,12 @@ func main() {
 		}
 	}()
 
+	// Set up a socket file
+	socketPath := "/tmp/rofi-chrome-tab.sock"
+	if err := os.RemoveAll(socketPath); err != nil {
+		log.Fatal(err)
+	}
+
 	// Receive commands from an Unix domain socket
 	go func() {
 		lis, err := net.Listen("unix", socketPath)
@@ -182,10 +228,26 @@ func main() {
 				continue
 			}
 
-			go func() {
-				defer conn.Close()
-				log.Printf("Updated tabs: %v", tabs)
-			}()
+			go func(c net.Conn) {
+				defer c.Close()
+				scanner := bufio.NewScanner(conn)
+
+				for scanner.Scan() {
+					line := strings.TrimSpace(scanner.Text())
+
+					cmd, err := ParseCommand(line)
+					if err != nil {
+						log.Println("Parse error:", err, "line:", line)
+						continue
+					}
+
+					cmdCh <- cmd
+				}
+
+				if err := scanner.Err(); err != nil {
+					log.Println("Read error:", err)
+				}
+			}(conn)
 		}
 	}()
 
@@ -193,6 +255,8 @@ func main() {
 		select {
 		case ev := <-evCh:
 			ev.Handle()
+		case cmd := <-cmdCh:
+			cmd.Execute()
 		}
 	}
 }
