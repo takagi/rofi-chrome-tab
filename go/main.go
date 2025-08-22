@@ -16,7 +16,6 @@ import (
 // Actions
 
 type Action interface {
-	Execute() error
 	Type() string
 }
 
@@ -24,11 +23,7 @@ type SelectAction struct {
 	TabID int `json:"tabId"`
 }
 
-func (a *SelectAction) Execute() error {
-	return nil
-}
-
-func (a *SelectAction) Type() string {
+func (a SelectAction) Type() string {
 	return "select"
 }
 
@@ -45,7 +40,7 @@ func SendAction(w io.Writer, a Action) error {
 		return err
 	}
 
-	body["type"] = a.Type()
+	body["command"] = a.Type()
 
 	data, err := json.Marshal(body)
 	if err != nil {
@@ -128,7 +123,31 @@ func RecvEvent(r io.Reader) (Event, error) {
 // Commands
 
 type Command interface {
-	Execute() error
+	Execute()
+}
+
+type ListCommand struct {}
+
+func (c ListCommand) Execute() {
+	writer := bufio.NewWriter(os.Stdout)
+	defer writer.Flush()
+
+	for _, tab := range tabs {
+		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
+		_, err := writer.WriteString(line + "\n")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "write error: %v\n", err)
+			return
+		}
+	}
+}
+
+type SelectCommand struct {
+	tabID int
+}
+
+func (c SelectCommand) Execute() {
+	SendAction(os.Stdout, SelectAction{TabID: c.tabID})
 }
 
 func ParseCommand(line string) (Command, error) {
@@ -139,7 +158,7 @@ func ParseCommand(line string) (Command, error) {
 
 	switch fields[0] {
 	case "list":
-		return &ListCommand{}, nil
+		return ListCommand{}, nil
     case "select":
         if len(fields) < 2 {
             return nil, fmt.Errorf("select command requires a TabID")
@@ -150,26 +169,10 @@ func ParseCommand(line string) (Command, error) {
             return nil, fmt.Errorf("invalid TabID: %s", fields[1])
         }
 
-        return &SelectCommand{tabID: tabID}, nil
+        return SelectCommand{tabID: tabID}, nil
     default:
         return nil, fmt.Errorf("unknown command: %s", fields[0])
     }
-}
-
-type ListCommand struct {}
-
-func (c *ListCommand) Execute() error {
-	// TODO
-	return nil
-}
-
-type SelectCommand struct {
-	tabID int
-}
-
-func (c *SelectCommand) Execute() error {
-	// TODO
-	return nil
 }
 
 // Main
@@ -178,6 +181,8 @@ var (
 	tabs  []Tab
 	evCh  = make(chan Event, 1)
 	cmdCh = make(chan Command, 1)
+
+	pid = os.Getpid()
 )
 
 func main() {
@@ -208,7 +213,7 @@ func main() {
 	}()
 
 	// Set up a socket file
-	socketPath := "/tmp/rofi-chrome-tab.sock"
+	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}
@@ -230,23 +235,22 @@ func main() {
 
 			go func(c net.Conn) {
 				defer c.Close()
-				scanner := bufio.NewScanner(conn)
 
-				for scanner.Scan() {
-					line := strings.TrimSpace(scanner.Text())
+				scanner := bufio.NewScanner(c)
 
-					cmd, err := ParseCommand(line)
-					if err != nil {
-						log.Println("Parse error:", err, "line:", line)
-						continue
-					}
-
-					cmdCh <- cmd
-				}
-
+				scanner.Scan()
 				if err := scanner.Err(); err != nil {
 					log.Println("Read error:", err)
 				}
+
+				line := strings.TrimSpace(scanner.Text())
+
+				cmd, err := ParseCommand(line)
+				if err != nil {
+					log.Println("Parse error:", err, "line:", line)
+				}
+
+				cmdCh <- cmd
 			}(conn)
 		}
 	}()
