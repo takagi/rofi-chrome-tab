@@ -55,7 +55,7 @@ func main() {
 	if !debug {
 		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	} else {
-		socketPath = fmt.Sprintf("/tmp/native-app.sock")
+		socketPath = "/tmp/native-app.sock"
 	}
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
