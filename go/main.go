@@ -27,18 +27,11 @@ var (
 
 func main() {
 	// Set up log file
-	logFile, err := os.OpenFile("/tmp/rofi_chrome_tab.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logCloser, err := SetupLogging("/tmp/rofi-chrome-tab.log")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to open log file:", err)
 		os.Exit(1)
-	} else {
-		log.SetOutput(logFile)
 	}
-	defer logFile.Close()
-
-	if debug {
-		log.Println("Debug mode")
-	}
+	defer logCloser.Close()
 
 	// Receive events from stdin
 	go func() {
