@@ -123,67 +123,79 @@ func RecvEvent(r io.Reader) (Event, error) {
 // Commands
 
 type Command interface {
-	Execute()
+	Execute(net.Conn) error
 }
 
-type ListCommand struct {}
+type ListCommand struct{}
 
-func (c ListCommand) Execute() {
-	writer := bufio.NewWriter(os.Stdout)
+func (c ListCommand) Execute(conn net.Conn) error {
+	writer := bufio.NewWriter(conn)
 	defer writer.Flush()
 
 	for _, tab := range tabs {
 		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
-		_, err := writer.WriteString(line + "\n")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "write error: %v\n", err)
-			return
+		if _, err := writer.WriteString(line + "\n"); err != nil {
+			return fmt.Errorf("write error: %v\n", err)
 		}
 	}
+
+	return nil
 }
 
 type SelectCommand struct {
 	tabID int
 }
 
-func (c SelectCommand) Execute() {
+func (c SelectCommand) Execute(net.Conn) error {
 	SendAction(os.Stdout, SelectAction{TabID: c.tabID})
+	return nil
 }
 
 func ParseCommand(line string) (Command, error) {
 	fields := strings.Fields(line)
-    if len(fields) == 0 {
-        return nil, fmt.Errorf("empty command")
-    }
+	if len(fields) == 0 {
+		return nil, fmt.Errorf("empty command")
+	}
 
 	switch fields[0] {
 	case "list":
 		return ListCommand{}, nil
-    case "select":
-        if len(fields) < 2 {
-            return nil, fmt.Errorf("select command requires a TabID")
-        }
+	case "select":
+		if len(fields) < 2 {
+			return nil, fmt.Errorf("select command requires a TabID")
+		}
 
 		tabID, err := strconv.Atoi(fields[1])
-        if err != nil {
-            return nil, fmt.Errorf("invalid TabID: %s", fields[1])
-        }
+		if err != nil {
+			return nil, fmt.Errorf("invalid TabID: %s", fields[1])
+		}
 
-        return SelectCommand{tabID: tabID}, nil
-    default:
-        return nil, fmt.Errorf("unknown command: %s", fields[0])
-    }
+		return SelectCommand{tabID: tabID}, nil
+	default:
+		return nil, fmt.Errorf("unknown command: %s", fields[0])
+	}
 }
 
 // Main
 
+type CommandWithConn struct {
+	Cmd  Command
+	Conn net.Conn
+}
+
 var (
 	tabs  []Tab
 	evCh  = make(chan Event, 1)
-	cmdCh = make(chan Command, 1)
+	cmdCh = make(chan CommandWithConn, 1)
 
-	pid = os.Getpid()
+	pid   = os.Getpid()
+	debug bool
 )
+
+func IsDebugMode() bool {
+	_, err := os.Stat("/tmp/.rofi-chrome-tab.debug")
+	return err == nil
+}
 
 func main() {
 	// Set up log file
@@ -195,6 +207,12 @@ func main() {
 		log.SetOutput(logFile)
 	}
 	defer logFile.Close()
+
+	// Check debug mode
+	debug = IsDebugMode()
+	if debug {
+		log.Println("Debug mode")
+	}
 
 	// Receive events from stdin
 	go func() {
@@ -208,12 +226,18 @@ func main() {
 				log.Println("Error receiving message:", err)
 				continue
 			}
+			log.Printf("Received event: %T", ev)
 			evCh <- ev
 		}
 	}()
 
 	// Set up a socket file
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	var socketPath string
+	if !debug {
+		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	} else {
+		socketPath = fmt.Sprintf("/tmp/native-app.sock")
+	}
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}
@@ -226,6 +250,8 @@ func main() {
 		}
 		defer lis.Close()
 
+		log.Printf("Listening on socket: %s", socketPath)
+
 		for {
 			conn, err := lis.Accept()
 			if err != nil {
@@ -234,8 +260,6 @@ func main() {
 			}
 
 			go func(c net.Conn) {
-				defer c.Close()
-
 				scanner := bufio.NewScanner(c)
 
 				scanner.Scan()
@@ -249,8 +273,9 @@ func main() {
 				if err != nil {
 					log.Println("Parse error:", err, "line:", line)
 				}
+				log.Printf("Received command: %T", cmd)
 
-				cmdCh <- cmd
+				cmdCh <- CommandWithConn{Cmd: cmd, Conn: c}
 			}(conn)
 		}
 	}()
@@ -259,8 +284,9 @@ func main() {
 		select {
 		case ev := <-evCh:
 			ev.Handle()
-		case cmd := <-cmdCh:
-			cmd.Execute()
+		case cw := <-cmdCh:
+			cw.Cmd.Execute(cw.Conn)
+			cw.Conn.Close()
 		}
 	}
 }
