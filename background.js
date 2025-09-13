@@ -5,8 +5,6 @@ function log(msg) {
 
 const port = chrome.runtime.connectNative("rofi_chrome_tab");
 
-let isUpdating = false;
-
 port.onMessage.addListener((msg) => {
     log('onMessage: ' + JSON.stringify(msg));
 
@@ -34,13 +32,9 @@ port.onMessage.addListener((msg) => {
     }
 
     if (msg.command === 'select') {
-        isUpdating = true;
         chrome.tabs.update(msg.tabId, { active: true })
             .then(tab => {
                 chrome.windows.update(tab.windowId, { focused: true })
-                    .then(window => {
-                        isUpdating = false;
-                    });
             });
         return;
     }
