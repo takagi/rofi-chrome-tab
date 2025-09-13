@@ -39,8 +39,6 @@ port.onMessage.addListener((msg) => {
             .then(tab => {
                 chrome.windows.update(tab.windowId, { focused: true })
                     .then(window => {
-                        //log('postMessage: ok');
-                        //port.postMessage('ok');
                         isUpdating = false;
                     });
             });
