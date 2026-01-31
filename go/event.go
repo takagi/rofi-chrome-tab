@@ -8,17 +8,14 @@ import (
 )
 
 type Event interface {
-	Handle() error
+	isEvent()
 }
 
 type UpdatedEvent struct {
 	Tabs []Tab `json:"tabs"`
 }
 
-func (ev *UpdatedEvent) Handle() error {
-	tabs = ev.Tabs // TODO: copy
-	return nil
-}
+func (UpdatedEvent) isEvent() {}
 
 var eventRegistry = map[string]func() Event{
 	"updated": func() Event { return &UpdatedEvent{} },
@@ -48,9 +45,16 @@ func RecvEvent(r io.Reader) (Event, error) {
 		return nil, fmt.Errorf("unknown event type: %s", header.Type)
 	}
 
-	ev := ctor()
-	if err := json.Unmarshal(buf, ev); err != nil {
+	evPtr := ctor()
+	if err := json.Unmarshal(buf, evPtr); err != nil {
 		return nil, err
 	}
-	return ev, nil
+
+	// Convert pointer to value
+	switch e := evPtr.(type) {
+	case *UpdatedEvent:
+		return *e, nil
+	default:
+		return nil, fmt.Errorf("unexpected event type: %T", evPtr)
+	}
 }

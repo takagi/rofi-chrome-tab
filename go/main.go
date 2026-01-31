@@ -40,11 +40,22 @@ func main() {
 	for {
 		select {
 		case ev := <-evCh:
-			ev.Handle()
+			handleEvent(ev)
 		case cw := <-cmdCh:
 			executeCommand(cw.Cmd, cw.Conn)
 			cw.Conn.Close()
 		}
+	}
+}
+
+func handleEvent(ev Event) error {
+	switch e := ev.(type) {
+	case UpdatedEvent:
+		tabs = e.Tabs // TODO: copy
+		return nil
+
+	default:
+		return fmt.Errorf("unknown event type: %T", ev)
 	}
 }
 
