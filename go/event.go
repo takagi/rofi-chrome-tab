@@ -25,10 +25,6 @@ func unmarshalEvent[T Event](buf []byte) (Event, error) {
 	return e, nil
 }
 
-var eventUnmarshalerRegistry = map[string]func([]byte) (Event, error){
-	"updated": unmarshalEvent[UpdatedEvent],
-}
-
 func RecvEvent(r io.Reader) (Event, error) {
 	lenBuf := make([]byte, 4)
 	if _, err := io.ReadFull(r, lenBuf); err != nil {
@@ -48,9 +44,10 @@ func RecvEvent(r io.Reader) (Event, error) {
 		return nil, err
 	}
 
-	unmarshaler, ok := eventUnmarshalerRegistry[header.Type]
-	if !ok {
+	switch header.Type {
+	case "updated":
+		return unmarshalEvent[UpdatedEvent](buf)
+	default:
 		return nil, fmt.Errorf("unknown event type: %s", header.Type)
 	}
-	return unmarshaler(buf)
 }
