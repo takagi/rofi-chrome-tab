@@ -24,8 +24,8 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Prepare test event
 	tabs := []Tab{
@@ -91,8 +91,8 @@ func TestStartEventReceiver_EOF(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
@@ -121,8 +121,8 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
@@ -164,8 +164,8 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
@@ -250,8 +250,8 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
@@ -290,8 +290,8 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel with larger buffer
-	evCh = make(chan Event, 10)
+	// Create local event channel with larger buffer
+	evCh := make(chan Event, 10)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
@@ -358,8 +358,8 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }()
 	os.Stdin = r
 
-	// Reset event channel
-	evCh = make(chan Event, 1)
+	// Create local event channel
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
 	startEventReceiver(evCh)
