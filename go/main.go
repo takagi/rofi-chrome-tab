@@ -33,6 +33,22 @@ func main() {
 	}
 	defer logCloser.Close()
 
+	startEventReceiver()
+
+	startCommandReceiver()
+
+	for {
+		select {
+		case ev := <-evCh:
+			ev.Handle()
+		case cw := <-cmdCh:
+			cw.Cmd.Execute(cw.Conn)
+			cw.Conn.Close()
+		}
+	}
+}
+
+func startEventReceiver() {
 	// Receive events from stdin
 	go func() {
 		for {
@@ -49,7 +65,9 @@ func main() {
 			evCh <- ev
 		}
 	}()
+}
 
+func startCommandReceiver() {
 	// Set up a socket file
 	var socketPath string
 	if !debug {
@@ -98,14 +116,4 @@ func main() {
 			}(conn)
 		}
 	}()
-
-	for {
-		select {
-		case ev := <-evCh:
-			ev.Handle()
-		case cw := <-cmdCh:
-			cw.Cmd.Execute(cw.Conn)
-			cw.Conn.Close()
-		}
-	}
 }
