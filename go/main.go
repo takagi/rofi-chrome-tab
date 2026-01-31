@@ -106,8 +106,8 @@ func startEventReceiver() {
 
 			// Validate message length to prevent excessive memory allocation
 			if length > maxMessageSize {
-				log.Printf("Message too large: %d bytes (max %d bytes)", length, maxMessageSize)
-				continue
+				log.Printf("Message too large: %d bytes (max %d bytes), closing stdin receiver", length, maxMessageSize)
+				return
 			}
 
 			// Read message body
