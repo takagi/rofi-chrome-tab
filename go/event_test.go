@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/json"
 	"testing"
 )
@@ -27,22 +25,8 @@ func TestRecvEvent(t *testing.T) {
 		t.Fatalf("Failed to marshal test data: %v", err)
 	}
 
-	// Create a buffer simulating the input stream
-	var buf bytes.Buffer
-
-	// Write 4-byte length header in little-endian format
-	length := uint32(len(jsonData))
-	if err := binary.Write(&buf, binary.LittleEndian, length); err != nil {
-		t.Fatalf("Failed to write length: %v", err)
-	}
-
-	// Write the JSON-encoded message body
-	if _, err := buf.Write(jsonData); err != nil {
-		t.Fatalf("Failed to write JSON data: %v", err)
-	}
-
-	// Call RecvEvent to parse the binary input
-	got, err := RecvEvent(&buf)
+	// Call RecvEvent to parse the JSON data
+	got, err := RecvEvent(jsonData)
 	if err != nil {
 		t.Fatalf("RecvEvent failed: %v", err)
 	}

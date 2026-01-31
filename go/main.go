@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
@@ -90,13 +91,33 @@ func startEventReceiver() {
 	// Receive events from stdin
 	go func() {
 		for {
-			ev, err := RecvEvent(os.Stdin)
-			if err == io.EOF {
-				log.Println("stdin closed")
-				return
+			// Read 4-byte length header
+			lenBuf := make([]byte, 4)
+			if _, err := io.ReadFull(os.Stdin, lenBuf); err != nil {
+				if err == io.EOF {
+					log.Println("stdin closed")
+					return
+				}
+				log.Println("Error reading length header:", err)
+				continue
 			}
+			length := binary.LittleEndian.Uint32(lenBuf)
+
+			// Read message body
+			buf := make([]byte, length)
+			if _, err := io.ReadFull(os.Stdin, buf); err != nil {
+				if err == io.EOF {
+					log.Println("stdin closed")
+					return
+				}
+				log.Println("Error reading message body:", err)
+				continue
+			}
+
+			// Parse event from bytes
+			ev, err := RecvEvent(buf)
 			if err != nil {
-				log.Println("Error receiving message:", err)
+				log.Println("Error parsing event:", err)
 				continue
 			}
 			log.Printf("Received event: %T", ev)

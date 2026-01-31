@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type Event interface {
@@ -25,18 +23,7 @@ func unmarshalEvent[T Event](buf []byte) (Event, error) {
 	return e, nil
 }
 
-func RecvEvent(r io.Reader) (Event, error) {
-	lenBuf := make([]byte, 4)
-	if _, err := io.ReadFull(r, lenBuf); err != nil {
-		return nil, err
-	}
-	length := binary.LittleEndian.Uint32(lenBuf)
-
-	buf := make([]byte, length)
-	if _, err := io.ReadFull(r, buf); err != nil {
-		return nil, err
-	}
-
+func RecvEvent(buf []byte) (Event, error) {
 	var header struct {
 		Type string `json:"type"`
 	}
