@@ -100,33 +100,37 @@ func TestStartCommandReceiver(t *testing.T) {
 	// Test 3: Multiple concurrent connections
 	t.Run("concurrent connections", func(t *testing.T) {
 		numConnections := 3
-		done := make(chan struct{}, numConnections)
+		type result struct {
+			id  int
+			err error
+		}
+		done := make(chan result, numConnections)
 
 		for i := 0; i < numConnections; i++ {
 			go func(id int) {
 				conn, err := net.Dial("unix", socketPath)
 				if err != nil {
-					t.Errorf("Connection %d failed: %v", id, err)
-					done <- struct{}{}
+					done <- result{id: id, err: fmt.Errorf("connection %d failed: %v", id, err)}
 					return
 				}
 				defer conn.Close()
 
 				_, err = conn.Write([]byte("list\n"))
 				if err != nil {
-					t.Errorf("Connection %d write failed: %v", id, err)
-					done <- struct{}{}
+					done <- result{id: id, err: fmt.Errorf("connection %d write failed: %v", id, err)}
 					return
 				}
-				done <- struct{}{}
+				done <- result{id: id, err: nil}
 			}(i)
 		}
 
 		// Collect all commands
 		for i := 0; i < numConnections; i++ {
 			select {
-			case <-done:
-				// Connection completed
+			case res := <-done:
+				if res.err != nil {
+					t.Errorf("%v", res.err)
+				}
 			case <-time.After(2 * time.Second):
 				t.Fatal("Timeout waiting for concurrent connection")
 			}
