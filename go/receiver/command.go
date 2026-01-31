@@ -1,4 +1,4 @@
-package main
+package receiver
 
 import (
 	"bufio"
@@ -7,12 +7,20 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	"rofi-chrome-tab/config"
+	"rofi-chrome-tab/protocol"
 )
 
-func startCommandReceiver(cmdCh chan CommandWithConn) {
+type CommandWithConn struct {
+	Cmd  protocol.Command
+	Conn net.Conn
+}
+
+func StartCommandReceiver(cmdCh chan CommandWithConn, pid int) {
 	// Set up a socket file
 	var socketPath string
-	if !debug {
+	if !config.Debug {
 		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	} else {
 		socketPath = "/tmp/native-app.sock"
@@ -48,7 +56,7 @@ func startCommandReceiver(cmdCh chan CommandWithConn) {
 
 				line := strings.TrimSpace(scanner.Text())
 
-				cmd, err := ParseCommand(line)
+				cmd, err := protocol.ParseCommand(line)
 				if err != nil {
 					log.Println("Parse error:", err, "line:", line)
 				}

@@ -1,4 +1,4 @@
-package main
+package receiver
 
 import (
 	"fmt"
@@ -6,28 +6,29 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"rofi-chrome-tab/config"
+	"rofi-chrome-tab/protocol"
 )
 
 func TestStartCommandReceiver(t *testing.T) {
 	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
+	originalDebug := config.Debug
 	defer func() {
-		pid = originalPid
-		debug = originalDebug
+		config.Debug = originalDebug
 	}()
 
 	// Set up test environment
-	pid = 12345
-	debug = false
+	testPid := 12345
+	config.Debug = false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Test socket path
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", testPid)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(testCmdCh)
+	StartCommandReceiver(testCmdCh, testPid)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -51,7 +52,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+			if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 				t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 			}
 			if cmdWithConn.Conn == nil {
@@ -80,7 +81,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			selectCmd, ok := cmdWithConn.Cmd.(SelectCommand)
+			selectCmd, ok := cmdWithConn.Cmd.(protocol.SelectCommand)
 			if !ok {
 				t.Errorf("Expected SelectCommand, got %T", cmdWithConn.Cmd)
 			}
@@ -132,7 +133,7 @@ func TestStartCommandReceiver(t *testing.T) {
 
 			select {
 			case cmdWithConn := <-testCmdCh:
-				if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+				if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 					t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 				}
 				cmdWithConn.Conn.Close()
@@ -157,16 +158,14 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
+	originalDebug := config.Debug
 	defer func() {
-		pid = originalPid
-		debug = originalDebug
+		config.Debug = originalDebug
 	}()
 
 	// Set up test environment in debug mode
-	pid = 12345
-	debug = true
+	testPid := 12345
+	config.Debug = true
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// In debug mode, socket path should be fixed
@@ -174,7 +173,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(testCmdCh)
+	StartCommandReceiver(testCmdCh, testPid)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -197,7 +196,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Wait for command to be received on channel
 	select {
 	case cmdWithConn := <-testCmdCh:
-		if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+		if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 			t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 		}
 		cmdWithConn.Conn.Close()
@@ -208,23 +207,21 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
+	originalDebug := config.Debug
 	defer func() {
-		pid = originalPid
-		debug = originalDebug
+		config.Debug = originalDebug
 	}()
 
 	// Set up test environment
-	pid = 12346
-	debug = false
+	testPid := 12346
+	config.Debug = false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", testPid)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(testCmdCh)
+	StartCommandReceiver(testCmdCh, testPid)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
