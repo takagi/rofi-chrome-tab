@@ -61,7 +61,7 @@ func handleEvent(ev Event) error {
 func executeCommand(cmd Command, conn net.Conn) error {
 	switch c := cmd.(type) {
 	case ListCommand:
-		return listTabs(conn)
+		return listTabs(conn, pid)
 
 	case SelectCommand:
 		SendAction(os.Stdout, SelectAction(c))
@@ -72,7 +72,7 @@ func executeCommand(cmd Command, conn net.Conn) error {
 	}
 }
 
-func listTabs(w io.Writer) error {
+func listTabs(w io.Writer, pid int) error {
 	writer := bufio.NewWriter(w)
 	defer writer.Flush()
 
