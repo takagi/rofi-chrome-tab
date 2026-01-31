@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func startCommandReceiver() {
+func startCommandReceiver(cmdCh chan CommandWithConn) {
 	// Set up a socket file
 	var socketPath string
 	if !debug {
