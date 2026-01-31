@@ -101,14 +101,14 @@ func TestStartCommandReceiver(t *testing.T) {
 	// Test 3: Multiple concurrent connections
 	t.Run("concurrent connections", func(t *testing.T) {
 		numConnections := 3
-		done := make(chan bool, numConnections)
+		done := make(chan struct{}, numConnections)
 
 		for i := 0; i < numConnections; i++ {
 			go func(id int) {
 				conn, err := net.Dial("unix", socketPath)
 				if err != nil {
 					t.Errorf("Connection %d failed: %v", id, err)
-					done <- false
+					done <- struct{}{}
 					return
 				}
 				defer conn.Close()
@@ -116,10 +116,10 @@ func TestStartCommandReceiver(t *testing.T) {
 				_, err = conn.Write([]byte("list\n"))
 				if err != nil {
 					t.Errorf("Connection %d write failed: %v", id, err)
-					done <- false
+					done <- struct{}{}
 					return
 				}
-				done <- true
+				done <- struct{}{}
 			}(i)
 		}
 
@@ -150,8 +150,6 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 	for time.Now().Before(deadline) {
 		_, err := os.Stat(socketPath)
 		if err == nil {
-			// Socket file exists, give it a bit more time to be ready
-			time.Sleep(10 * time.Millisecond)
 			return nil
 		}
 		time.Sleep(10 * time.Millisecond)
