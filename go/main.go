@@ -41,7 +41,7 @@ func main() {
 		case ev := <-evCh:
 			handleEvent(ev)
 		case cw := <-cmdCh:
-			executeCommand(cw.Cmd, cw.Conn)
+			executeCommand(cw.Cmd, cw.Conn, pid)
 			cw.Conn.Close()
 		}
 	}
@@ -58,7 +58,7 @@ func handleEvent(ev Event) error {
 	}
 }
 
-func executeCommand(cmd Command, conn net.Conn) error {
+func executeCommand(cmd Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
 	case ListCommand:
 		return listTabs(conn, pid)
