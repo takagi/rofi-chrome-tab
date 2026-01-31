@@ -24,14 +24,17 @@ func TestStartCommandReceiver(t *testing.T) {
 	debug = false
 	cmdCh = make(chan CommandWithConn, 1)
 
+	// Test socket path
+	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	defer os.RemoveAll(socketPath)
+
 	// Start the command receiver
 	startCommandReceiver()
 
-	// Give it time to start listening
-	time.Sleep(100 * time.Millisecond)
-
-	// Test socket path
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	// Wait for socket to be ready with retry logic
+	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
+		t.Fatalf("Socket not ready: %v", err)
+	}
 
 	// Test 1: Connect to the socket and send a list command
 	t.Run("list command", func(t *testing.T) {
@@ -140,9 +143,20 @@ func TestStartCommandReceiver(t *testing.T) {
 			}
 		}
 	})
+}
 
-	// Clean up socket
-	os.RemoveAll(socketPath)
+func waitForSocket(socketPath string, timeout time.Duration) error {
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		_, err := os.Stat(socketPath)
+		if err == nil {
+			// Socket file exists, give it a bit more time to be ready
+			time.Sleep(10 * time.Millisecond)
+			return nil
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	return fmt.Errorf("timeout waiting for socket %s", socketPath)
 }
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
@@ -161,14 +175,17 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	debug = true
 	cmdCh = make(chan CommandWithConn, 1)
 
+	// In debug mode, socket path should be fixed
+	socketPath := "/tmp/native-app.sock"
+	defer os.RemoveAll(socketPath)
+
 	// Start the command receiver
 	startCommandReceiver()
 
-	// Give it time to start listening
-	time.Sleep(100 * time.Millisecond)
-
-	// In debug mode, socket path should be fixed
-	socketPath := "/tmp/native-app.sock"
+	// Wait for socket to be ready with retry logic
+	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
+		t.Fatalf("Socket not ready: %v", err)
+	}
 
 	// Connect and test
 	conn, err := net.Dial("unix", socketPath)
@@ -193,9 +210,6 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("Timeout waiting for command on channel")
 	}
-
-	// Clean up socket
-	os.RemoveAll(socketPath)
 }
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
@@ -214,13 +228,16 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	debug = false
 	cmdCh = make(chan CommandWithConn, 1)
 
+	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	defer os.RemoveAll(socketPath)
+
 	// Start the command receiver
 	startCommandReceiver()
 
-	// Give it time to start listening
-	time.Sleep(100 * time.Millisecond)
-
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	// Wait for socket to be ready with retry logic
+	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
+		t.Fatalf("Socket not ready: %v", err)
+	}
 
 	// Connect and send invalid command
 	conn, err := net.Dial("unix", socketPath)
@@ -247,7 +264,4 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("Timeout waiting for command on channel")
 	}
-
-	// Clean up socket
-	os.RemoveAll(socketPath)
 }
