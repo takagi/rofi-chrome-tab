@@ -1,8 +1,0 @@
-[tool.mypy]
-strict = true
-
-[tool.ruff]
-line-length = 80
-lint.select = ["E", "F", "I", "W"]
-lint.ignore = ["E501"]
-fix = true
