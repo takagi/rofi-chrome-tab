@@ -42,10 +42,37 @@ func main() {
 		case ev := <-evCh:
 			ev.Handle()
 		case cw := <-cmdCh:
-			cw.Cmd.Execute(cw.Conn)
+			executeCommand(cw.Cmd, cw.Conn)
 			cw.Conn.Close()
 		}
 	}
+}
+
+func executeCommand(cmd Command, conn net.Conn) error {
+	switch c := cmd.(type) {
+	case ListCommand:
+		return listTabs(conn)
+
+	case SelectCommand:
+		SendAction(os.Stdout, SelectAction{TabID: c.TabID})
+		return nil
+
+	default:
+		return fmt.Errorf("unknown command type: %T", cmd)
+	}
+}
+
+func listTabs(conn net.Conn) error {
+	writer := bufio.NewWriter(conn)
+	defer writer.Flush()
+
+	for _, tab := range tabs {
+		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
+		if _, err := writer.WriteString(line + "\n"); err != nil {
+			return fmt.Errorf("write error: %v\n", err)
+		}
+	}
+	return nil
 }
 
 func startEventReceiver() {

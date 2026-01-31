@@ -1,42 +1,24 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"net"
-	"os"
 	"strconv"
 	"strings"
 )
 
 type Command interface {
-	Execute(net.Conn) error
+	isCommand()
 }
 
 type ListCommand struct{}
 
-func (c ListCommand) Execute(conn net.Conn) error {
-	writer := bufio.NewWriter(conn)
-	defer writer.Flush()
-
-	for _, tab := range tabs {
-		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
-		if _, err := writer.WriteString(line + "\n"); err != nil {
-			return fmt.Errorf("write error: %v\n", err)
-		}
-	}
-
-	return nil
-}
+func (ListCommand) isCommand() {}
 
 type SelectCommand struct {
-	tabID int
+	TabID int
 }
 
-func (c SelectCommand) Execute(net.Conn) error {
-	SendAction(os.Stdout, SelectAction{TabID: c.tabID})
-	return nil
-}
+func (SelectCommand) isCommand() {}
 
 func ParseCommand(line string) (Command, error) {
 	fields := strings.Fields(line)
@@ -57,7 +39,7 @@ func ParseCommand(line string) (Command, error) {
 			return nil, fmt.Errorf("invalid TabID: %s", fields[1])
 		}
 
-		return SelectCommand{tabID: tabID}, nil
+		return SelectCommand{TabID: tabID}, nil
 	default:
 		return nil, fmt.Errorf("unknown command: %s", fields[0])
 	}
