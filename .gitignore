@@ -2,3 +2,7 @@
 .mypy_cache/
 .venv/
 rofi_chrome_tab.json
+
+# Go build artifacts
+go/rofi-chrome-tab
+go/coverage.out
