@@ -250,7 +250,7 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	case cmdWithConn := <-testCmdCh:
 		t.Errorf("Expected no command on channel for invalid input, got %T", cmdWithConn.Cmd)
 		cmdWithConn.Conn.Close()
-	case <-time.After(100 * time.Millisecond):
+	case <-time.After(500 * time.Millisecond):
 		// This is expected - no command should be sent
 	}
 }
