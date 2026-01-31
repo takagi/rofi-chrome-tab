@@ -32,7 +32,8 @@ func main() {
 
 	receiver.StartEventReceiver(os.Stdin, evCh)
 
-	receiver.StartCommandReceiver(cmdCh, pid)
+	socketPath := receiver.GetSocketPath(pid, config.Debug)
+	receiver.StartCommandReceiver(socketPath, cmdCh)
 
 	for {
 		select {

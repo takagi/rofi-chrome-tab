@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"rofi-chrome-tab/config"
 	"rofi-chrome-tab/protocol"
 )
 
@@ -17,14 +16,16 @@ type CommandWithConn struct {
 	Conn net.Conn
 }
 
-func StartCommandReceiver(cmdCh chan CommandWithConn, pid int) {
-	// Set up a socket file
-	var socketPath string
-	if !config.Debug {
-		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
-	} else {
-		socketPath = "/tmp/native-app.sock"
+// GetSocketPath returns the Unix domain socket path based on the process ID and debug mode.
+func GetSocketPath(processID int, debugMode bool) string {
+	if !debugMode {
+		return fmt.Sprintf("/tmp/native-app.%d.sock", processID)
 	}
+	return "/tmp/native-app.sock"
+}
+
+func StartCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
+	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}

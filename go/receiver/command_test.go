@@ -7,28 +7,65 @@ import (
 	"testing"
 	"time"
 
-	"rofi-chrome-tab/config"
 	"rofi-chrome-tab/protocol"
 )
 
-func TestStartCommandReceiver(t *testing.T) {
-	// Save original values and restore after test
-	originalDebug := config.Debug
-	defer func() {
-		config.Debug = originalDebug
-	}()
+func TestGetSocketPath(t *testing.T) {
+	tests := []struct {
+		name      string
+		processID int
+		debugMode bool
+		wantPath  string
+	}{
+		{
+			name:      "normal mode with pid 12345",
+			processID: 12345,
+			debugMode: false,
+			wantPath:  "/tmp/native-app.12345.sock",
+		},
+		{
+			name:      "debug mode with pid 12345",
+			processID: 12345,
+			debugMode: true,
+			wantPath:  "/tmp/native-app.sock",
+		},
+		{
+			name:      "normal mode with pid 99999",
+			processID: 99999,
+			debugMode: false,
+			wantPath:  "/tmp/native-app.99999.sock",
+		},
+		{
+			name:      "debug mode with pid 99999",
+			processID: 99999,
+			debugMode: true,
+			wantPath:  "/tmp/native-app.sock",
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotPath := GetSocketPath(tt.processID, tt.debugMode)
+			if gotPath != tt.wantPath {
+				t.Errorf("GetSocketPath(%d, %v) = %v, want %v",
+					tt.processID, tt.debugMode, gotPath, tt.wantPath)
+			}
+		})
+	}
+}
+
+func TestStartCommandReceiver(t *testing.T) {
 	// Set up test environment
 	testPid := 12345
-	config.Debug = false
+	testDebug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Test socket path
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", testPid)
+	socketPath := GetSocketPath(testPid, testDebug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(testCmdCh, testPid)
+	StartCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -161,23 +198,17 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 }
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
-	// Save original values and restore after test
-	originalDebug := config.Debug
-	defer func() {
-		config.Debug = originalDebug
-	}()
-
 	// Set up test environment in debug mode
 	testPid := 12345
-	config.Debug = true
+	testDebug := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// In debug mode, socket path should be fixed
-	socketPath := "/tmp/native-app.sock"
+	socketPath := GetSocketPath(testPid, testDebug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(testCmdCh, testPid)
+	StartCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -210,22 +241,16 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 }
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
-	// Save original values and restore after test
-	originalDebug := config.Debug
-	defer func() {
-		config.Debug = originalDebug
-	}()
-
 	// Set up test environment
 	testPid := 12346
-	config.Debug = false
+	testDebug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", testPid)
+	socketPath := GetSocketPath(testPid, testDebug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(testCmdCh, testPid)
+	StartCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
