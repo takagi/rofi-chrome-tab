@@ -18,6 +18,14 @@ func (a SelectAction) Type() string {
 	return "select"
 }
 
+type CloseAction struct {
+	TabID int `json:"tabId"`
+}
+
+func (a CloseAction) Type() string {
+	return "close"
+}
+
 func SendAction(w io.Writer, a Action) error {
 	payload, err := json.Marshal(a)
 	if err != nil {

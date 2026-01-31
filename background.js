@@ -20,7 +20,13 @@ port.onMessage.addListener((msg) => {
                             return 'No URL'
                         }
                     })();
-                    tabs1.push({ id: tab.id, title: tab.title, host });
+                    tabs1.push({ 
+                        id: tab.id, 
+                        title: tab.title, 
+                        host,
+                        url: tab.url || '',
+                        windowId: tab.windowId
+                    });
                 }
 
                 const message = JSON.stringify(tabs1);
@@ -35,6 +41,17 @@ port.onMessage.addListener((msg) => {
         chrome.tabs.update(msg.tabId, { active: true })
             .then(tab => {
                 chrome.windows.update(tab.windowId, { focused: true })
+            });
+        return;
+    }
+
+    if (msg.command === 'close') {
+        chrome.tabs.remove(msg.tabId)
+            .then(() => {
+                log('Tab closed: ' + msg.tabId);
+            })
+            .catch(err => {
+                console.error('Error closing tab:', err);
             });
         return;
     }
@@ -69,7 +86,13 @@ function notifyUpdatedEvent() {
                         return 'No URL'
                     }
                 })();
-                tabs1.push({ id: tab.id, title: tab.title, host });
+                tabs1.push({ 
+                    id: tab.id, 
+                    title: tab.title, 
+                    host,
+                    url: tab.url || '',
+                    windowId: tab.windowId
+                });
             }
 
             const message = JSON.stringify(tabs1);
