@@ -51,7 +51,7 @@ func main() {
 func handleEvent(ev Event) error {
 	switch e := ev.(type) {
 	case UpdatedEvent:
-		tabs = e.Tabs // TODO: copy
+		tabs = e.Tabs
 		return nil
 
 	default:
