@@ -4,17 +4,16 @@ import (
 	"encoding/binary"
 	"io"
 	"log"
-	"os"
 )
 
-func startEventReceiver(evCh chan Event) {
+func startEventReceiver(r io.Reader, evCh chan Event) {
 	// Receive events from stdin
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
 		for {
 			// Read 4-byte length header
 			lenBuf := make([]byte, 4)
-			if _, err := io.ReadFull(os.Stdin, lenBuf); err != nil {
+			if _, err := io.ReadFull(r, lenBuf); err != nil {
 				if err == io.EOF {
 					log.Println("stdin closed")
 				} else {
@@ -32,7 +31,7 @@ func startEventReceiver(evCh chan Event) {
 
 			// Read message body
 			buf := make([]byte, length)
-			if _, err := io.ReadFull(os.Stdin, buf); err != nil {
+			if _, err := io.ReadFull(r, buf); err != nil {
 				if err == io.EOF {
 					log.Println("stdin closed")
 				} else {
