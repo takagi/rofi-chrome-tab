@@ -2,13 +2,10 @@ package main
 
 import (
 	"bufio"
-	"encoding/binary"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
-	"strings"
 )
 
 // Main
@@ -85,101 +82,4 @@ func listTabs(w io.Writer) error {
 		}
 	}
 	return nil
-}
-
-func startEventReceiver() {
-	// Receive events from stdin
-	go func() {
-		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
-		for {
-			// Read 4-byte length header
-			lenBuf := make([]byte, 4)
-			if _, err := io.ReadFull(os.Stdin, lenBuf); err != nil {
-				if err == io.EOF {
-					log.Println("stdin closed")
-				} else {
-					log.Println("Error reading length header:", err)
-				}
-				return
-			}
-			length := binary.LittleEndian.Uint32(lenBuf)
-
-			// Validate message length to prevent excessive memory allocation
-			if length > maxMessageSize {
-				log.Printf("Message too large: %d bytes (max %d bytes), closing stdin receiver", length, maxMessageSize)
-				return
-			}
-
-			// Read message body
-			buf := make([]byte, length)
-			if _, err := io.ReadFull(os.Stdin, buf); err != nil {
-				if err == io.EOF {
-					log.Println("stdin closed")
-				} else {
-					log.Println("Error reading message body:", err)
-				}
-				return
-			}
-
-			// Parse event from bytes
-			ev, err := ParseEvent(buf)
-			if err != nil {
-				log.Println("Error parsing event:", err)
-				continue
-			}
-			log.Printf("Received event: %T", ev)
-			evCh <- ev
-		}
-	}()
-}
-
-func startCommandReceiver() {
-	// Set up a socket file
-	var socketPath string
-	if !debug {
-		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
-	} else {
-		socketPath = "/tmp/native-app.sock"
-	}
-	if err := os.RemoveAll(socketPath); err != nil {
-		log.Fatal(err)
-	}
-
-	// Receive commands from an Unix domain socket
-	go func() {
-		lis, err := net.Listen("unix", socketPath)
-		if err != nil {
-			log.Fatal("listen error:", err)
-		}
-		defer lis.Close()
-
-		log.Printf("Listening on socket: %s", socketPath)
-
-		for {
-			conn, err := lis.Accept()
-			if err != nil {
-				log.Println("Accept error:", err)
-				continue
-			}
-
-			go func(c net.Conn) {
-				scanner := bufio.NewScanner(c)
-
-				scanner.Scan()
-				if err := scanner.Err(); err != nil {
-					log.Println("Read error:", err)
-				}
-
-				line := strings.TrimSpace(scanner.Text())
-
-				cmd, err := ParseCommand(line)
-				if err != nil {
-					log.Println("Parse error:", err, "line:", line)
-				}
-				log.Printf("Received command: %T", cmd)
-
-				cmdCh <- CommandWithConn{Cmd: cmd, Conn: c}
-			}(conn)
-		}
-	}()
 }
