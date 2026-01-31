@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func startEventReceiver() {
+func startEventReceiver(evCh chan Event) {
 	// Receive events from stdin
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
