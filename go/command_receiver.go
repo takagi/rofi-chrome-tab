@@ -9,14 +9,16 @@ import (
 	"strings"
 )
 
-func startCommandReceiver(cmdCh chan CommandWithConn) {
-	// Set up a socket file
-	var socketPath string
-	if !debug {
-		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
-	} else {
-		socketPath = "/tmp/native-app.sock"
+// getSocketPath returns the Unix domain socket path based on the process ID and debug mode.
+func getSocketPath(processID int, debugMode bool) string {
+	if !debugMode {
+		return fmt.Sprintf("/tmp/native-app.%d.sock", processID)
 	}
+	return "/tmp/native-app.sock"
+}
+
+func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
+	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}
