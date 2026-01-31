@@ -23,7 +23,7 @@ func unmarshalEvent[T Event](buf []byte) (Event, error) {
 	return e, nil
 }
 
-func RecvEvent(buf []byte) (Event, error) {
+func ParseEvent(buf []byte) (Event, error) {
 	var header struct {
 		Type string `json:"type"`
 	}

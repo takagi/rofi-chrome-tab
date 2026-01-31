@@ -122,7 +122,7 @@ func startEventReceiver() {
 			}
 
 			// Parse event from bytes
-			ev, err := RecvEvent(buf)
+			ev, err := ParseEvent(buf)
 			if err != nil {
 				log.Println("Error parsing event:", err)
 				continue

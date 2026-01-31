@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestRecvEvent(t *testing.T) {
+func TestParseEvent(t *testing.T) {
 	tabs := []Tab{
 		{ID: 1, Title: "Tab1", Host: "example.com"},
 		{ID: 2, Title: "Tab2", Host: "example.org"},
@@ -25,10 +25,10 @@ func TestRecvEvent(t *testing.T) {
 		t.Fatalf("Failed to marshal test data: %v", err)
 	}
 
-	// Call RecvEvent to parse the JSON data
-	got, err := RecvEvent(jsonData)
+	// Call ParseEvent to parse the JSON data
+	got, err := ParseEvent(jsonData)
 	if err != nil {
-		t.Fatalf("RecvEvent failed: %v", err)
+		t.Fatalf("ParseEvent failed: %v", err)
 	}
 
 	// Assert returned value is UpdatedEvent
