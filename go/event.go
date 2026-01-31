@@ -25,7 +25,7 @@ func unmarshalEvent[T Event](buf []byte) (Event, error) {
 	return e, nil
 }
 
-var eventTypeMap = map[string]func([]byte) (Event, error){
+var eventUnmarshalerRegistry = map[string]func([]byte) (Event, error){
 	"updated": unmarshalEvent[UpdatedEvent],
 }
 
@@ -48,7 +48,7 @@ func RecvEvent(r io.Reader) (Event, error) {
 		return nil, err
 	}
 
-	unmarshaler, ok := eventTypeMap[header.Type]
+	unmarshaler, ok := eventUnmarshalerRegistry[header.Type]
 	if !ok {
 		return nil, fmt.Errorf("unknown event type: %s", header.Type)
 	}
