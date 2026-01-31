@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
-	"io"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -298,7 +298,7 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 
 	// Send multiple events
 	for i := 1; i <= 3; i++ {
-		tabs := []Tab{{ID: i, Title: "Tab " + string(rune('0'+i)), Host: "example.com"}}
+		tabs := []Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
 		event := struct {
 			Type string `json:"type"`
 			Tabs []Tab  `json:"tabs"`
@@ -383,19 +383,4 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 	default:
 		// Expected: no event received
 	}
-}
-
-// Helper function to write a complete message to a writer
-func writeMessage(w io.Writer, data []byte) error {
-	length := uint32(len(data))
-	var lenBuf [4]byte
-	binary.LittleEndian.PutUint32(lenBuf[:], length)
-
-	if _, err := w.Write(lenBuf[:]); err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
 }
