@@ -19,8 +19,6 @@ var (
 	tabs  []Tab
 	evCh  = make(chan Event, 1)
 	cmdCh = make(chan CommandWithConn, 1)
-
-	pid = os.Getpid()
 )
 
 func main() {
@@ -30,6 +28,8 @@ func main() {
 		os.Exit(1)
 	}
 	defer logCloser.Close()
+
+	pid := os.Getpid()
 
 	startEventReceiver(os.Stdin, evCh)
 
