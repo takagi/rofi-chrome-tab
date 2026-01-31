@@ -5,7 +5,8 @@ if [[ $# -eq 0 ]]; then
         echo list | nc -U ${sock}
     done
 else
-    # Parse the CSV format: pid,tab_id,window_id,host,url,title
+    # Input format is CSV: pid,tab_id,window_id,host,url,title
+    # We only need to extract pid and tab_id for the commands
     pid=$(echo $1 | cut -d , -f 1)
     tab_id=$(echo $1 | cut -d , -f 2)
     
