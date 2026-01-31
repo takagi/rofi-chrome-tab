@@ -90,6 +90,7 @@ func listTabs(w io.Writer) error {
 func startEventReceiver() {
 	// Receive events from stdin
 	go func() {
+		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
 		for {
 			// Read 4-byte length header
 			lenBuf := make([]byte, 4)
@@ -102,6 +103,12 @@ func startEventReceiver() {
 				continue
 			}
 			length := binary.LittleEndian.Uint32(lenBuf)
+
+			// Validate message length to prevent excessive memory allocation
+			if length > maxMessageSize {
+				log.Printf("Message too large: %d bytes (max %d bytes)", length, maxMessageSize)
+				continue
+			}
 
 			// Read message body
 			buf := make([]byte, length)
