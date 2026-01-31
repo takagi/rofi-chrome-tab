@@ -12,7 +12,7 @@ func TestParseCommand(t *testing.T) {
 		wantErr bool
 	}{
 		{"list", "list", ListCommand{}, false},
-		{"select ok", "select 123", SelectCommand{tabID: 123}, false},
+		{"select ok", "select 123", SelectCommand{TabID: 123}, false},
 		{"empty", "", nil, true},
 		{"unknown", "foo", nil, true},
 		{"select bad arg", "select abc", nil, true},

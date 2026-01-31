@@ -40,12 +40,50 @@ func main() {
 	for {
 		select {
 		case ev := <-evCh:
-			ev.Handle()
+			handleEvent(ev)
 		case cw := <-cmdCh:
-			cw.Cmd.Execute(cw.Conn)
+			executeCommand(cw.Cmd, cw.Conn)
 			cw.Conn.Close()
 		}
 	}
+}
+
+func handleEvent(ev Event) error {
+	switch e := ev.(type) {
+	case UpdatedEvent:
+		tabs = e.Tabs
+		return nil
+
+	default:
+		return fmt.Errorf("unknown event type: %T", ev)
+	}
+}
+
+func executeCommand(cmd Command, conn net.Conn) error {
+	switch c := cmd.(type) {
+	case ListCommand:
+		return listTabs(conn)
+
+	case SelectCommand:
+		SendAction(os.Stdout, SelectAction{TabID: c.TabID})
+		return nil
+
+	default:
+		return fmt.Errorf("unknown command type: %T", cmd)
+	}
+}
+
+func listTabs(w io.Writer) error {
+	writer := bufio.NewWriter(w)
+	defer writer.Flush()
+
+	for _, tab := range tabs {
+		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
+		if _, err := writer.WriteString(line + "\n"); err != nil {
+			return fmt.Errorf("write error: %v\n", err)
+		}
+	}
+	return nil
 }
 
 func startEventReceiver() {

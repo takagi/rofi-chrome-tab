@@ -47,10 +47,10 @@ func TestRecvEvent(t *testing.T) {
 		t.Fatalf("RecvEvent failed: %v", err)
 	}
 
-	// Assert returned value is *UpdatedEvent
-	ev, ok := got.(*UpdatedEvent)
+	// Assert returned value is UpdatedEvent
+	ev, ok := got.(UpdatedEvent)
 	if !ok {
-		t.Fatalf("Expected *UpdatedEvent, got %T", got)
+		t.Fatalf("Expected UpdatedEvent, got %T", got)
 	}
 
 	// Compare the contents
