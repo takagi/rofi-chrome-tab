@@ -13,12 +13,9 @@ func TestParseCommand(t *testing.T) {
 	}{
 		{"list", "list", ListCommand{}, false},
 		{"select ok", "select 123", SelectCommand{TabID: 123}, false},
-		{"close ok", "close 456", CloseCommand{TabID: 456}, false},
 		{"empty", "", nil, true},
 		{"unknown", "foo", nil, true},
 		{"select bad arg", "select abc", nil, true},
-		{"close bad arg", "close xyz", nil, true},
-		{"close no arg", "close", nil, true},
 	}
 
 	for _, tt := range tests {

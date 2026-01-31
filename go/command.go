@@ -20,12 +20,6 @@ type SelectCommand struct {
 
 func (SelectCommand) isCommand() {}
 
-type CloseCommand struct {
-	TabID int
-}
-
-func (CloseCommand) isCommand() {}
-
 func ParseCommand(line string) (Command, error) {
 	fields := strings.Fields(line)
 	if len(fields) == 0 {
@@ -46,17 +40,6 @@ func ParseCommand(line string) (Command, error) {
 		}
 
 		return SelectCommand{TabID: tabID}, nil
-	case "close":
-		if len(fields) < 2 {
-			return nil, fmt.Errorf("close command requires a TabID")
-		}
-
-		tabID, err := strconv.Atoi(fields[1])
-		if err != nil {
-			return nil, fmt.Errorf("invalid TabID: %s", fields[1])
-		}
-
-		return CloseCommand{TabID: tabID}, nil
 	default:
 		return nil, fmt.Errorf("unknown command: %s", fields[0])
 	}

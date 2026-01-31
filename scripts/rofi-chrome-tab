@@ -5,17 +5,9 @@ if [[ $# -eq 0 ]]; then
         echo list | nc -U ${sock}
     done
 else
-    # Input format is CSV: pid,tab_id,window_id,host,url,title
-    # We only need to extract pid and tab_id for the commands
     pid=$(echo $1 | cut -d , -f 1)
     tab_id=$(echo $1 | cut -d , -f 2)
-    
-    # Check if this is a close action (Shift+Delete in rofi)
-    if [[ "$ROFI_RETV" == "10" ]]; then
-        echo "close ${tab_id}" | nc -U /tmp/native-app.${pid}.sock
-    else
-        echo "select ${tab_id}" | nc -U /tmp/native-app.${pid}.sock
-        i3-msg '[urgent=latest] focus' > /dev/null
-    fi
+    echo "select ${tab_id}" | nc -U /tmp/native-app.${pid}.sock
+    i3-msg '[urgent=latest] focus' > /dev/null
 fi
  

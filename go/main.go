@@ -66,10 +66,6 @@ func executeCommand(cmd Command, conn net.Conn) error {
 		SendAction(os.Stdout, SelectAction(c))
 		return nil
 
-	case CloseCommand:
-		SendAction(os.Stdout, CloseAction(c))
-		return nil
-
 	default:
 		return fmt.Errorf("unknown command type: %T", cmd)
 	}
@@ -80,7 +76,7 @@ func listTabs(w io.Writer) error {
 	defer writer.Flush()
 
 	for _, tab := range tabs {
-		line := fmt.Sprintf("%d,%d,%d,%s,%s,%s", pid, tab.ID, tab.WindowID, tab.Host, tab.URL, tab.Title)
+		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
 		if _, err := writer.WriteString(line + "\n"); err != nil {
 			return fmt.Errorf("write error: %v", err)
 		}
