@@ -35,21 +35,6 @@ jobs:
         go mod verify
         go mod download
 
-    - name: Build
-      working-directory: ./go
-      run: go build -v ./...
-
-    - name: Run tests
-      working-directory: ./go
-      run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./go/coverage.out
-        flags: go
-        fail_ci_if_error: false
-
     - name: Check formatting
       working-directory: ./go
       run: |
@@ -68,3 +53,18 @@ jobs:
       with:
         version: "latest"
         working-directory: go
+
+    - name: Build
+      working-directory: ./go
+      run: go build -v ./...
+
+    - name: Run tests
+      working-directory: ./go
+      run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./go/coverage.out
+        flags: go
+        fail_ci_if_error: false
