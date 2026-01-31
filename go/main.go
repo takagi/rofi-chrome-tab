@@ -31,9 +31,9 @@ func main() {
 	}
 	defer logCloser.Close()
 
-	startEventReceiver()
+	startEventReceiver(evCh)
 
-	startCommandReceiver()
+	startCommandReceiver(cmdCh)
 
 	for {
 		select {

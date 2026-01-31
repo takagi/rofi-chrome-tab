@@ -29,7 +29,7 @@ func TestStartCommandReceiver(t *testing.T) {
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver()
+	startCommandReceiver(cmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -178,7 +178,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver()
+	startCommandReceiver(cmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -230,7 +230,7 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver()
+	startCommandReceiver(cmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
