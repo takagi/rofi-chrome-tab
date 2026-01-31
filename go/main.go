@@ -97,10 +97,10 @@ func startEventReceiver() {
 			if _, err := io.ReadFull(os.Stdin, lenBuf); err != nil {
 				if err == io.EOF {
 					log.Println("stdin closed")
-					return
+				} else {
+					log.Println("Error reading length header:", err)
 				}
-				log.Println("Error reading length header:", err)
-				continue
+				return
 			}
 			length := binary.LittleEndian.Uint32(lenBuf)
 
@@ -115,10 +115,10 @@ func startEventReceiver() {
 			if _, err := io.ReadFull(os.Stdin, buf); err != nil {
 				if err == io.EOF {
 					log.Println("stdin closed")
-					return
+				} else {
+					log.Println("Error reading message body:", err)
 				}
-				log.Println("Error reading message body:", err)
-				continue
+				return
 			}
 
 			// Parse event from bytes
