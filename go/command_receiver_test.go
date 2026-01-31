@@ -12,24 +12,22 @@ func TestStartCommandReceiver(t *testing.T) {
 	// Save original values and restore after test
 	originalPid := pid
 	originalDebug := debug
-	originalCmdCh := cmdCh
 	defer func() {
 		pid = originalPid
 		debug = originalDebug
-		cmdCh = originalCmdCh
 	}()
 
 	// Set up test environment
 	pid = 12345
 	debug = false
-	cmdCh = make(chan CommandWithConn, 1)
+	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Test socket path
 	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(cmdCh)
+	startCommandReceiver(testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -52,7 +50,7 @@ func TestStartCommandReceiver(t *testing.T) {
 
 		// Wait for command to be received on channel
 		select {
-		case cmdWithConn := <-cmdCh:
+		case cmdWithConn := <-testCmdCh:
 			if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 				t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 			}
@@ -81,7 +79,7 @@ func TestStartCommandReceiver(t *testing.T) {
 
 		// Wait for command to be received on channel
 		select {
-		case cmdWithConn := <-cmdCh:
+		case cmdWithConn := <-testCmdCh:
 			selectCmd, ok := cmdWithConn.Cmd.(SelectCommand)
 			if !ok {
 				t.Errorf("Expected SelectCommand, got %T", cmdWithConn.Cmd)
@@ -133,7 +131,7 @@ func TestStartCommandReceiver(t *testing.T) {
 			}
 
 			select {
-			case cmdWithConn := <-cmdCh:
+			case cmdWithConn := <-testCmdCh:
 				if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 					t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 				}
@@ -161,24 +159,22 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Save original values and restore after test
 	originalPid := pid
 	originalDebug := debug
-	originalCmdCh := cmdCh
 	defer func() {
 		pid = originalPid
 		debug = originalDebug
-		cmdCh = originalCmdCh
 	}()
 
 	// Set up test environment in debug mode
 	pid = 12345
 	debug = true
-	cmdCh = make(chan CommandWithConn, 1)
+	testCmdCh := make(chan CommandWithConn, 1)
 
 	// In debug mode, socket path should be fixed
 	socketPath := "/tmp/native-app.sock"
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(cmdCh)
+	startCommandReceiver(testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -200,7 +196,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 
 	// Wait for command to be received on channel
 	select {
-	case cmdWithConn := <-cmdCh:
+	case cmdWithConn := <-testCmdCh:
 		if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 			t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 		}
@@ -214,23 +210,21 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	// Save original values and restore after test
 	originalPid := pid
 	originalDebug := debug
-	originalCmdCh := cmdCh
 	defer func() {
 		pid = originalPid
 		debug = originalDebug
-		cmdCh = originalCmdCh
 	}()
 
 	// Set up test environment
 	pid = 12346
 	debug = false
-	cmdCh = make(chan CommandWithConn, 1)
+	testCmdCh := make(chan CommandWithConn, 1)
 
 	socketPath := fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	startCommandReceiver(cmdCh)
+	startCommandReceiver(testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -253,7 +247,7 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	// The receiver should still send the command (even if nil) on the channel
 	// based on the code logic
 	select {
-	case cmdWithConn := <-cmdCh:
+	case cmdWithConn := <-testCmdCh:
 		// Invalid commands result in nil cmd
 		if cmdWithConn.Cmd != nil {
 			t.Errorf("Expected nil command for invalid input, got %T", cmdWithConn.Cmd)
