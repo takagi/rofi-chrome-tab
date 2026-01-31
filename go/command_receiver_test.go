@@ -244,16 +244,13 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 
-	// The receiver should still send the command (even if nil) on the channel
-	// based on the code logic
+	// The receiver should NOT send invalid commands on the channel
+	// Instead, it should close the connection and log the error
 	select {
 	case cmdWithConn := <-testCmdCh:
-		// Invalid commands result in nil cmd
-		if cmdWithConn.Cmd != nil {
-			t.Errorf("Expected nil command for invalid input, got %T", cmdWithConn.Cmd)
-		}
+		t.Errorf("Expected no command on channel for invalid input, got %T", cmdWithConn.Cmd)
 		cmdWithConn.Conn.Close()
-	case <-time.After(1 * time.Second):
-		t.Fatal("Timeout waiting for command on channel")
+	case <-time.After(100 * time.Millisecond):
+		// This is expected - no command should be sent
 	}
 }

@@ -3,6 +3,17 @@ function log(msg) {
     console.log(`[${now}] ${msg}`);
 }
 
+function getTabInfo(tab) {
+    const host = (() => {
+        try {
+            return new URL(tab.url).hostname;
+        } catch {
+            return 'No URL'
+        }
+    })();
+    return { id: tab.id, title: tab.title, host };
+}
+
 const port = chrome.runtime.connectNative("rofi_chrome_tab");
 
 port.onMessage.addListener((msg) => {
@@ -11,17 +22,7 @@ port.onMessage.addListener((msg) => {
     if (msg.command === 'list') {
         chrome.tabs.query({})
             .then(tabs => {
-                let tabs1 = [];
-                for (let tab of tabs) {
-                    const host = (() => {
-                        try {
-                            return new URL(tab.url).hostname;
-                        } catch {
-                            return 'No URL'
-                        }
-                    })();
-                    tabs1.push({ id: tab.id, title: tab.title, host });
-                }
+                const tabs1 = tabs.map(getTabInfo);
 
                 const message = JSON.stringify(tabs1);
                 const preview = message.length >= 30 ? message.slice(0, 30) + "..." : message;
@@ -35,6 +36,12 @@ port.onMessage.addListener((msg) => {
         chrome.tabs.update(msg.tabId, { active: true })
             .then(tab => {
                 chrome.windows.update(tab.windowId, { focused: true })
+                    .catch(err => {
+                        console.error('Failed to focus window:', err);
+                    });
+            })
+            .catch(err => {
+                console.error('Failed to select tab:', err);
             });
         return;
     }
@@ -60,17 +67,7 @@ port.onDisconnect.addListener(() => {
 function notifyUpdatedEvent() {
     chrome.tabs.query({})
         .then(tabs => {
-            let tabs1 = [];
-            for (let tab of tabs) {
-                const host = (() => {
-                    try {
-                        return new URL(tab.url).hostname;
-                    } catch {
-                        return 'No URL'
-                    }
-                })();
-                tabs1.push({ id: tab.id, title: tab.title, host });
-            }
+            const tabs1 = tabs.map(getTabInfo);
 
             const message = JSON.stringify(tabs1);
             const preview = message.length >= 30 ? message.slice(0, 30) + "..." : message;
