@@ -63,7 +63,7 @@ func executeCommand(cmd Command, conn net.Conn) error {
 		return listTabs(conn)
 
 	case SelectCommand:
-		SendAction(os.Stdout, SelectAction{TabID: c.TabID})
+		SendAction(os.Stdout, SelectAction(c))
 		return nil
 
 	default:
@@ -78,7 +78,7 @@ func listTabs(w io.Writer) error {
 	for _, tab := range tabs {
 		line := fmt.Sprintf("%d,%d,%s,%s", pid, tab.ID, tab.Host, tab.Title)
 		if _, err := writer.WriteString(line + "\n"); err != nil {
-			return fmt.Errorf("write error: %v\n", err)
+			return fmt.Errorf("write error: %v", err)
 		}
 	}
 	return nil
