@@ -49,14 +49,13 @@ function createPreview(message) {
 }
 
 /**
- * Logs and posts processed tabs
- * @param {Array} processedTabs - The processed tabs to send
+ * Logs a preview of processed tabs
+ * @param {Array} processedTabs - The processed tabs to log
  */
-function logAndPostTabs(processedTabs) {
+function logTabsPreview(processedTabs) {
     const message = JSON.stringify(processedTabs);
     const preview = createPreview(message);
     log('postMessage: ' + preview);
-    return processedTabs;
 }
 
 const port = chrome.runtime.connectNative("rofi_chrome_tab");
@@ -68,7 +67,7 @@ port.onMessage.addListener((msg) => {
         chrome.tabs.query({})
             .then(tabs => {
                 const processedTabs = processTabs(tabs);
-                logAndPostTabs(processedTabs);
+                logTabsPreview(processedTabs);
                 port.postMessage(processedTabs);
             })
             .catch(error => {
@@ -116,7 +115,7 @@ function notifyUpdatedEvent() {
     chrome.tabs.query({})
         .then(tabs => {
             const processedTabs = processTabs(tabs);
-            logAndPostTabs(processedTabs);
+            logTabsPreview(processedTabs);
             port.postMessage({
                 type: 'updated',
                 tabs: processedTabs
