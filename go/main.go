@@ -31,7 +31,7 @@ func main() {
 	}
 	defer logCloser.Close()
 
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	startCommandReceiver()
 

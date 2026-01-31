@@ -46,7 +46,7 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	}
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Write length header and message to stdin
 	length := uint32(len(jsonData))
@@ -95,7 +95,7 @@ func TestStartEventReceiver_EOF(t *testing.T) {
 	evCh = make(chan Event, 1)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Close the write end to simulate EOF
 	w.Close()
@@ -125,7 +125,7 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	evCh = make(chan Event, 1)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Write a length header that exceeds the max message size (10MB)
 	const maxMessageSize = 10 * 1024 * 1024
@@ -168,7 +168,7 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	evCh = make(chan Event, 1)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Write invalid JSON
 	invalidJSON := []byte("not valid json")
@@ -254,7 +254,7 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 	evCh = make(chan Event, 1)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Write partial length header
 	if _, err := w.Write([]byte{0x01, 0x02}); err != nil {
@@ -294,7 +294,7 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	evCh = make(chan Event, 10)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Send multiple events
 	for i := 1; i <= 3; i++ {
@@ -362,7 +362,7 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 	evCh = make(chan Event, 1)
 
 	// Start the event receiver
-	startEventReceiver()
+	startEventReceiver(evCh)
 
 	// Write a zero-length message
 	length := uint32(0)
