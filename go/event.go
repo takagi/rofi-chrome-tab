@@ -18,7 +18,7 @@ type UpdatedEvent struct {
 func (UpdatedEvent) isEvent() {}
 
 var eventRegistry = map[string]func() Event{
-	"updated": func() Event { return &UpdatedEvent{} },
+	"updated": func() Event { return UpdatedEvent{} },
 }
 
 func RecvEvent(r io.Reader) (Event, error) {
@@ -45,16 +45,15 @@ func RecvEvent(r io.Reader) (Event, error) {
 		return nil, fmt.Errorf("unknown event type: %s", header.Type)
 	}
 
-	evPtr := ctor()
-	if err := json.Unmarshal(buf, evPtr); err != nil {
-		return nil, err
-	}
+	ev := ctor()
 
-	// Convert pointer to value
-	switch e := evPtr.(type) {
-	case *UpdatedEvent:
-		return *e, nil
+	switch e := ev.(type) {
+	case UpdatedEvent:
+		if err := json.Unmarshal(buf, &e); err != nil {
+			return nil, err
+		}
+		return e, nil
 	default:
-		return nil, fmt.Errorf("unexpected event type: %T", evPtr)
+		return nil, fmt.Errorf("unexpected event type: %T", ev)
 	}
 }
