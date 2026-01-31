@@ -62,8 +62,8 @@ func executeCommand(cmd Command, conn net.Conn) error {
 	}
 }
 
-func listTabs(conn net.Conn) error {
-	writer := bufio.NewWriter(conn)
+func listTabs(w io.Writer) error {
+	writer := bufio.NewWriter(w)
 	defer writer.Flush()
 
 	for _, tab := range tabs {
