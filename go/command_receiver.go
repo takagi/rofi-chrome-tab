@@ -9,15 +9,13 @@ import (
 	"strings"
 )
 
-// getSocketPath returns the Unix domain socket path based on the process ID and debug mode.
-func getSocketPath(processID int, debugMode bool) string {
+func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
+	// Determine socket path based on process ID and debug mode
+	socketPath := "/tmp/native-app.sock"
 	if !debugMode {
-		return fmt.Sprintf("/tmp/native-app.%d.sock", processID)
+		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	}
-	return "/tmp/native-app.sock"
-}
 
-func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
@@ -64,4 +62,6 @@ func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 			}(conn)
 		}
 	}()
+
+	return socketPath
 }
