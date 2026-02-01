@@ -17,16 +17,6 @@ else
     
     # Send select command
     echo "select ${tab_id}" | nc -U "/tmp/native-app.${pid}.sock"
-    
-    # Focus window using appropriate window manager
-    if command -v i3-msg &> /dev/null; then
-        i3-msg '[urgent=latest] focus' > /dev/null
-    elif command -v swaymsg &> /dev/null; then
-        swaymsg '[urgent=latest] focus' > /dev/null
-    elif command -v wmctrl &> /dev/null; then
-        # wmctrl works with many window managers
-        wmctrl -a chrome > /dev/null 2>&1 || wmctrl -a chromium > /dev/null 2>&1
-    fi
-    # If no known window manager is found, silently continue (command already executed)
+    i3-msg '[urgent=latest] focus' > /dev/null
 fi
  
