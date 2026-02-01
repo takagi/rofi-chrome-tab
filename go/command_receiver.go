@@ -11,11 +11,9 @@ import (
 
 func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
 	// Determine socket path based on process ID and debug mode
-	var socketPath string
+	socketPath := "/tmp/native-app.sock"
 	if !debugMode {
 		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
-	} else {
-		socketPath = "/tmp/native-app.sock"
 	}
 	
 	// Remove existing socket file
