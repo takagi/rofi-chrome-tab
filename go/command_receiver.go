@@ -15,7 +15,7 @@ func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) s
 	if !debugMode {
 		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	}
-	
+
 	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
@@ -62,6 +62,6 @@ func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) s
 			}(conn)
 		}
 	}()
-	
+
 	return socketPath
 }
