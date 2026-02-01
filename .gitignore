@@ -4,5 +4,5 @@
 rofi_chrome_tab.json
 
 # Go build artifacts
-rofi-chrome-tab
+/rofi-chrome-tab
 coverage.out
