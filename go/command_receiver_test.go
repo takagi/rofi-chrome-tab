@@ -1,4 +1,4 @@
-package receiver
+package main
 
 import (
 	"fmt"
@@ -6,8 +6,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	"rofi-chrome-tab/protocol"
 )
 
 func TestGetSocketPath(t *testing.T) {
@@ -45,9 +43,9 @@ func TestGetSocketPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotPath := GetSocketPath(tt.processID, tt.debugMode)
+			gotPath := getSocketPath(tt.processID, tt.debugMode)
 			if gotPath != tt.wantPath {
-				t.Errorf("GetSocketPath(%d, %v) = %v, want %v",
+				t.Errorf("getSocketPath(%d, %v) = %v, want %v",
 					tt.processID, tt.debugMode, gotPath, tt.wantPath)
 			}
 		})
@@ -56,16 +54,16 @@ func TestGetSocketPath(t *testing.T) {
 
 func TestStartCommandReceiver(t *testing.T) {
 	// Set up test environment
-	testPid := 12345
-	testDebug := false
+	pid := 12345
+	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Test socket path
-	socketPath := GetSocketPath(testPid, testDebug)
+	socketPath := getSocketPath(pid, debug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(socketPath, testCmdCh)
+	startCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -89,7 +87,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
+			if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 				t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 			}
 			if cmdWithConn.Conn == nil {
@@ -118,7 +116,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			selectCmd, ok := cmdWithConn.Cmd.(protocol.SelectCommand)
+			selectCmd, ok := cmdWithConn.Cmd.(SelectCommand)
 			if !ok {
 				t.Errorf("Expected SelectCommand, got %T", cmdWithConn.Cmd)
 			}
@@ -137,44 +135,40 @@ func TestStartCommandReceiver(t *testing.T) {
 	// Test 3: Multiple concurrent connections
 	t.Run("concurrent connections", func(t *testing.T) {
 		numConnections := 3
-		type result struct {
-			id  int
-			err error
-		}
-		done := make(chan result, numConnections)
+		done := make(chan struct{}, numConnections)
 
 		for i := 0; i < numConnections; i++ {
 			go func(id int) {
 				conn, err := net.Dial("unix", socketPath)
 				if err != nil {
-					done <- result{id: id, err: fmt.Errorf("connection %d failed: %v", id, err)}
+					t.Errorf("Connection %d failed: %v", id, err)
+					done <- struct{}{}
 					return
 				}
 				defer conn.Close()
 
 				_, err = conn.Write([]byte("list\n"))
 				if err != nil {
-					done <- result{id: id, err: fmt.Errorf("connection %d write failed: %v", id, err)}
+					t.Errorf("Connection %d write failed: %v", id, err)
+					done <- struct{}{}
 					return
 				}
-				done <- result{id: id, err: nil}
+				done <- struct{}{}
 			}(i)
 		}
 
 		// Collect all commands
 		for i := 0; i < numConnections; i++ {
 			select {
-			case res := <-done:
-				if res.err != nil {
-					t.Errorf("%v", res.err)
-				}
+			case <-done:
+				// Connection completed
 			case <-time.After(2 * time.Second):
 				t.Fatal("Timeout waiting for concurrent connection")
 			}
 
 			select {
 			case cmdWithConn := <-testCmdCh:
-				if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
+				if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 					t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 				}
 				cmdWithConn.Conn.Close()
@@ -199,16 +193,16 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Set up test environment in debug mode
-	testPid := 12345
-	testDebug := true
+	pid := 12345
+	debug := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// In debug mode, socket path should be fixed
-	socketPath := GetSocketPath(testPid, testDebug)
+	socketPath := getSocketPath(pid, debug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(socketPath, testCmdCh)
+	startCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -231,7 +225,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Wait for command to be received on channel
 	select {
 	case cmdWithConn := <-testCmdCh:
-		if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
+		if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
 			t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 		}
 		cmdWithConn.Conn.Close()
@@ -242,15 +236,15 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	// Set up test environment
-	testPid := 12346
-	testDebug := false
+	pid := 12346
+	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := GetSocketPath(testPid, testDebug)
+	socketPath := getSocketPath(pid, debug)
 	defer os.RemoveAll(socketPath)
 
 	// Start the command receiver
-	StartCommandReceiver(socketPath, testCmdCh)
+	startCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -270,16 +264,13 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 
-	// The receiver should still send the command (even if nil) on the channel
-	// based on the code logic
+	// The receiver should NOT send invalid commands on the channel
+	// Instead, it should close the connection and log the error
 	select {
 	case cmdWithConn := <-testCmdCh:
-		// Invalid commands result in nil cmd
-		if cmdWithConn.Cmd != nil {
-			t.Errorf("Expected nil command for invalid input, got %T", cmdWithConn.Cmd)
-		}
+		t.Errorf("Expected no command on channel for invalid input, got %T", cmdWithConn.Cmd)
 		cmdWithConn.Conn.Close()
-	case <-time.After(1 * time.Second):
-		t.Fatal("Timeout waiting for command on channel")
+	case <-time.After(500 * time.Millisecond):
+		// This is expected - no command should be sent
 	}
 }

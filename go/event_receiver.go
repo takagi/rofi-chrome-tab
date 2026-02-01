@@ -1,14 +1,12 @@
-package receiver
+package main
 
 import (
 	"encoding/binary"
 	"io"
 	"log"
-
-	"rofi-chrome-tab/protocol"
 )
 
-func StartEventReceiver(r io.Reader, evCh chan protocol.Event) {
+func startEventReceiver(r io.Reader, evCh chan Event) {
 	// Receive events from stdin
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
@@ -43,7 +41,7 @@ func StartEventReceiver(r io.Reader, evCh chan protocol.Event) {
 			}
 
 			// Parse event from bytes
-			ev, err := protocol.ParseEvent(buf)
+			ev, err := ParseEvent(buf)
 			if err != nil {
 				log.Println("Error parsing event:", err)
 				continue

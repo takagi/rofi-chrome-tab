@@ -1,13 +1,22 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]]; then
-    for sock in `ls /tmp/native-app*.sock`; do
-        echo list | nc -U ${sock}
+    # Use find instead of ls to safely handle glob patterns
+    find /tmp -name "native-app*.sock" 2>/dev/null | while read -r sock; do
+        echo list | nc -U "${sock}"
     done
 else
-    pid=$(echo $1 | cut -d , -f 1)
-    tab_id=$(echo $1 | cut -d , -f 2)
-    echo "select ${tab_id}" | nc -U /tmp/native-app.${pid}.sock
+    # Validate input before processing (format: pid,tabID,host,title)
+    if [[ ! "$1" =~ ^[0-9]+,[0-9]+, ]]; then
+        echo "Error: Invalid input format (expected: pid,tabID,host,title)" >&2
+        exit 1
+    fi
+    
+    pid=$(echo "$1" | cut -d , -f 1)
+    tab_id=$(echo "$1" | cut -d , -f 2)
+    
+    # Send select command
+    echo "select ${tab_id}" | nc -U "/tmp/native-app.${pid}.sock"
     i3-msg '[urgent=latest] focus' > /dev/null
 fi
  

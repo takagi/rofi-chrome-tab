@@ -6,49 +6,50 @@ import (
 	"io"
 	"net"
 	"os"
-
-	"rofi-chrome-tab/config"
-	"rofi-chrome-tab/protocol"
-	"rofi-chrome-tab/receiver"
 )
 
 // Main
 
-var (
-	tabs  []protocol.Tab
-	evCh  = make(chan protocol.Event, 1)
-	cmdCh = make(chan receiver.CommandWithConn, 1)
+type CommandWithConn struct {
+	Cmd  Command
+	Conn net.Conn
+}
 
-	pid = os.Getpid()
+var (
+	tabs  []Tab
+	evCh  = make(chan Event, 1)
+	cmdCh = make(chan CommandWithConn, 1)
 )
 
 func main() {
 	// Set up log file
-	logCloser, err := config.SetupLogging("/tmp/rofi-chrome-tab.log")
+	logCloser, err := SetupLogging("/tmp/rofi-chrome-tab.log")
 	if err != nil {
 		os.Exit(1)
 	}
 	defer logCloser.Close()
 
-	receiver.StartEventReceiver(os.Stdin, evCh)
+	pid := os.Getpid()
 
-	socketPath := receiver.GetSocketPath(pid, config.Debug)
-	receiver.StartCommandReceiver(socketPath, cmdCh)
+	startEventReceiver(os.Stdin, evCh)
+
+	socketPath := getSocketPath(pid, debug)
+	startCommandReceiver(socketPath, cmdCh)
 
 	for {
 		select {
 		case ev := <-evCh:
 			handleEvent(ev)
 		case cw := <-cmdCh:
-			executeCommand(cw.Cmd, cw.Conn)
+			executeCommand(cw.Cmd, cw.Conn, pid)
 			cw.Conn.Close()
 		}
 	}
 }
 
-func handleEvent(ev protocol.Event) error {
+func handleEvent(ev Event) error {
 	switch e := ev.(type) {
-	case protocol.UpdatedEvent:
+	case UpdatedEvent:
 		tabs = e.Tabs
 		return nil
 
@@ -57,13 +58,13 @@ func handleEvent(ev protocol.Event) error {
 	}
 }
 
-func executeCommand(cmd protocol.Command, conn net.Conn) error {
+func executeCommand(cmd Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
-	case protocol.ListCommand:
-		return listTabs(conn)
+	case ListCommand:
+		return listTabs(conn, pid)
 
-	case protocol.SelectCommand:
-		protocol.SendAction(os.Stdout, protocol.SelectAction(c))
+	case SelectCommand:
+		SendAction(os.Stdout, SelectAction(c))
 		return nil
 
 	default:
@@ -71,7 +72,7 @@ func executeCommand(cmd protocol.Command, conn net.Conn) error {
 	}
 }
 
-func listTabs(w io.Writer) error {
+func listTabs(w io.Writer, pid int) error {
 	writer := bufio.NewWriter(w)
 	defer writer.Flush()
 
