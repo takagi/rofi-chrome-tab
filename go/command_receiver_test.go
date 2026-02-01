@@ -8,50 +8,6 @@ import (
 	"time"
 )
 
-func TestGetSocketPath(t *testing.T) {
-	tests := []struct {
-		name      string
-		processID int
-		debugMode bool
-		wantPath  string
-	}{
-		{
-			name:      "normal mode with pid 12345",
-			processID: 12345,
-			debugMode: false,
-			wantPath:  "/tmp/native-app.12345.sock",
-		},
-		{
-			name:      "debug mode with pid 12345",
-			processID: 12345,
-			debugMode: true,
-			wantPath:  "/tmp/native-app.sock",
-		},
-		{
-			name:      "normal mode with pid 99999",
-			processID: 99999,
-			debugMode: false,
-			wantPath:  "/tmp/native-app.99999.sock",
-		},
-		{
-			name:      "debug mode with pid 99999",
-			processID: 99999,
-			debugMode: true,
-			wantPath:  "/tmp/native-app.sock",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotPath := getSocketPath(tt.processID, tt.debugMode)
-			if gotPath != tt.wantPath {
-				t.Errorf("getSocketPath(%d, %v) = %v, want %v",
-					tt.processID, tt.debugMode, gotPath, tt.wantPath)
-			}
-		})
-	}
-}
-
 func TestStartCommandReceiver(t *testing.T) {
 	// Set up test environment
 	pid := 12345

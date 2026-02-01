@@ -9,21 +9,14 @@ import (
 	"strings"
 )
 
-// getSocketPath returns the Unix domain socket path based on the process ID and debug mode.
-// This function is placed in command_receiver.go because:
-// 1. It's specifically used for creating the socket path for the command receiver
-// 2. It's logically grouped with startCommandReceiver which uses the socket path
-// 3. Creating a receiver struct just for this utility would be over-engineering
-// 4. Placing it in main.go would put implementation details in the wrong architectural layer
-func getSocketPath(processID int, debugMode bool) string {
-	if !debugMode {
-		return fmt.Sprintf("/tmp/native-app.%d.sock", processID)
-	}
-	return "/tmp/native-app.sock"
-}
-
 func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
-	socketPath := getSocketPath(pid, debugMode)
+	// Determine socket path based on process ID and debug mode
+	var socketPath string
+	if !debugMode {
+		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
+	} else {
+		socketPath = "/tmp/native-app.sock"
+	}
 	
 	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
