@@ -46,6 +46,8 @@ func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 				scanner.Scan()
 				if err := scanner.Err(); err != nil {
 					log.Println("Read error:", err)
+					c.Close()
+					return
 				}
 
 				line := strings.TrimSpace(scanner.Text())
@@ -53,6 +55,8 @@ func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 				cmd, err := ParseCommand(line)
 				if err != nil {
 					log.Println("Parse error:", err, "line:", line)
+					c.Close()
+					return
 				}
 				log.Printf("Received command: %T", cmd)
 
