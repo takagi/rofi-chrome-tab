@@ -33,8 +33,8 @@ func main() {
 
 	startEventReceiver(os.Stdin, evCh)
 
-	socketPath := getSocketPath(pid, debug)
-	startCommandReceiver(socketPath, cmdCh)
+	socketPath := startCommandReceiver(pid, debug, cmdCh)
+	_ = socketPath // Ignore the returned socket path
 
 	for {
 		select {

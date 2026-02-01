@@ -58,12 +58,9 @@ func TestStartCommandReceiver(t *testing.T) {
 	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	// Test socket path
-	socketPath := getSocketPath(pid, debug)
-	defer os.RemoveAll(socketPath)
-
 	// Start the command receiver
-	startCommandReceiver(socketPath, testCmdCh)
+	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -197,12 +194,9 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	debug := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	// In debug mode, socket path should be fixed
-	socketPath := getSocketPath(pid, debug)
-	defer os.RemoveAll(socketPath)
-
 	// Start the command receiver
-	startCommandReceiver(socketPath, testCmdCh)
+	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
@@ -240,11 +234,8 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := getSocketPath(pid, debug)
+	socketPath := startCommandReceiver(pid, debug, testCmdCh)
 	defer os.RemoveAll(socketPath)
-
-	// Start the command receiver
-	startCommandReceiver(socketPath, testCmdCh)
 
 	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {

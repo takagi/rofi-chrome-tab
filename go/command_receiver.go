@@ -22,7 +22,9 @@ func getSocketPath(processID int, debugMode bool) string {
 	return "/tmp/native-app.sock"
 }
 
-func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
+func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
+	socketPath := getSocketPath(pid, debugMode)
+	
 	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
@@ -69,4 +71,6 @@ func startCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 			}(conn)
 		}
 	}()
+	
+	return socketPath
 }
