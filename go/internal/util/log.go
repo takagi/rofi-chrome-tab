@@ -20,7 +20,7 @@ func SetupLogging(path string) (io.Closer, error) {
 		}
 		log.SetOutput(logFile)
 		log.Println("Debug mode: logging to", path)
-		return logFile, err
+		return logFile, nil
 	} else {
 		log.SetOutput(io.Discard)
 		return nopCloser{}, nil
