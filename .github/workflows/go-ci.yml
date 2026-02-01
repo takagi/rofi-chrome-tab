@@ -4,12 +4,16 @@ on:
   push:
     branches: [ main, master ]
     paths:
-      - 'go/**'
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.mod'
       - '.github/workflows/go-ci.yml'
   pull_request:
     branches: [ main, master ]
     paths:
-      - 'go/**'
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.mod'
       - '.github/workflows/go-ci.yml'
 
 jobs:
@@ -27,16 +31,14 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.24'
-        cache-dependency-path: go/go.mod
+        cache-dependency-path: go.mod
 
     - name: Verify dependencies
-      working-directory: ./go
       run: |
         go mod verify
         go mod download
 
     - name: Check formatting
-      working-directory: ./go
       run: |
         if [ -n "$(gofmt -s -l .)" ]; then
           echo "Go code is not formatted:"
@@ -45,26 +47,22 @@ jobs:
         fi
 
     - name: Run go vet
-      working-directory: ./go
       run: go vet ./...
 
     - name: Run staticcheck
       uses: dominikh/staticcheck-action@v1
       with:
         version: "latest"
-        working-directory: go
 
     - name: Build
-      working-directory: ./go
       run: go build -v ./...
 
     - name: Run tests
-      working-directory: ./go
       run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
 
     - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
-        files: ./go/coverage.out
+        files: ./coverage.out
         flags: go
         fail_ci_if_error: false
