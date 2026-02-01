@@ -19,8 +19,6 @@ var (
 	tabs  []Tab
 	evCh  = make(chan Event, 1)
 	cmdCh = make(chan CommandWithConn, 1)
-
-	pid = os.Getpid()
 )
 
 func main() {
@@ -30,6 +28,8 @@ func main() {
 		os.Exit(1)
 	}
 	defer logCloser.Close()
+
+	pid := os.Getpid()
 
 	startEventReceiver(os.Stdin, evCh)
 
@@ -41,7 +41,7 @@ func main() {
 		case ev := <-evCh:
 			handleEvent(ev)
 		case cw := <-cmdCh:
-			executeCommand(cw.Cmd, cw.Conn)
+			executeCommand(cw.Cmd, cw.Conn, pid)
 			cw.Conn.Close()
 		}
 	}
@@ -58,10 +58,10 @@ func handleEvent(ev Event) error {
 	}
 }
 
-func executeCommand(cmd Command, conn net.Conn) error {
+func executeCommand(cmd Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
 	case ListCommand:
-		return listTabs(conn)
+		return listTabs(conn, pid)
 
 	case SelectCommand:
 		SendAction(os.Stdout, SelectAction(c))
@@ -72,7 +72,7 @@ func executeCommand(cmd Command, conn net.Conn) error {
 	}
 }
 
-func listTabs(w io.Writer) error {
+func listTabs(w io.Writer, pid int) error {
 	writer := bufio.NewWriter(w)
 	defer writer.Flush()
 

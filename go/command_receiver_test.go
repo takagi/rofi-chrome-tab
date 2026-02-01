@@ -53,17 +53,9 @@ func TestGetSocketPath(t *testing.T) {
 }
 
 func TestStartCommandReceiver(t *testing.T) {
-	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
-	defer func() {
-		pid = originalPid
-		debug = originalDebug
-	}()
-
 	// Set up test environment
-	pid = 12345
-	debug = false
+	pid := 12345
+	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Test socket path
@@ -200,17 +192,9 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 }
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
-	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
-	defer func() {
-		pid = originalPid
-		debug = originalDebug
-	}()
-
 	// Set up test environment in debug mode
-	pid = 12345
-	debug = true
+	pid := 12345
+	debug := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// In debug mode, socket path should be fixed
@@ -251,17 +235,9 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 }
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
-	// Save original values and restore after test
-	originalPid := pid
-	originalDebug := debug
-	defer func() {
-		pid = originalPid
-		debug = originalDebug
-	}()
-
 	// Set up test environment
-	pid = 12346
-	debug = false
+	pid := 12346
+	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	socketPath := getSocketPath(pid, debug)
