@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"bufio"
@@ -9,7 +9,12 @@ import (
 	"strings"
 )
 
-func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
+type CommandWithConn struct {
+	Cmd  Command
+	Conn net.Conn
+}
+
+func StartCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
 	// Determine socket path based on process ID and debug mode
 	socketPath := "/tmp/native-app.sock"
 	if !debugMode {

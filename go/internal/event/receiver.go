@@ -1,4 +1,4 @@
-package main
+package event
 
 import (
 	"encoding/binary"
@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func startEventReceiver(r io.Reader, evCh chan Event) {
+func StartEventReceiver(r io.Reader, evCh chan Event) {
 	// Receive events from stdin
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit

@@ -1,19 +1,21 @@
-package main
+package event
 
 import (
 	"encoding/json"
 	"testing"
+
+	"rofi-chrome-tab/internal/model"
 )
 
 func TestParseEvent(t *testing.T) {
-	tabs := []Tab{
+	tabs := []model.Tab{
 		{ID: 1, Title: "Tab1", Host: "example.com"},
 		{ID: 2, Title: "Tab2", Host: "example.org"},
 	}
 
 	event := struct {
-		Type string `json:"type"`
-		Tabs []Tab  `json:"tabs"`
+		Type string      `json:"type"`
+		Tabs []model.Tab `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,

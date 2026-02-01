@@ -6,24 +6,25 @@ import (
 	"io"
 	"net"
 	"os"
+
+	"rofi-chrome-tab/internal/action"
+	"rofi-chrome-tab/internal/command"
+	"rofi-chrome-tab/internal/event"
+	"rofi-chrome-tab/internal/model"
+	"rofi-chrome-tab/internal/util"
 )
 
 // Main
 
-type CommandWithConn struct {
-	Cmd  Command
-	Conn net.Conn
-}
-
 var (
-	tabs  []Tab
-	evCh  = make(chan Event, 1)
-	cmdCh = make(chan CommandWithConn, 1)
+	tabs  []model.Tab
+	evCh  = make(chan event.Event, 1)
+	cmdCh = make(chan command.CommandWithConn, 1)
 )
 
 func main() {
 	// Set up log file
-	logCloser, err := SetupLogging("/tmp/rofi-chrome-tab.log")
+	logCloser, err := util.SetupLogging("/tmp/rofi-chrome-tab.log")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -31,9 +32,9 @@ func main() {
 
 	pid := os.Getpid()
 
-	startEventReceiver(os.Stdin, evCh)
+	event.StartEventReceiver(os.Stdin, evCh)
 
-	_ = startCommandReceiver(pid, debug, cmdCh)
+	_ = command.StartCommandReceiver(pid, util.IsDebugMode(), cmdCh)
 
 	for {
 		select {
@@ -46,9 +47,9 @@ func main() {
 	}
 }
 
-func handleEvent(ev Event) error {
+func handleEvent(ev event.Event) error {
 	switch e := ev.(type) {
-	case UpdatedEvent:
+	case event.UpdatedEvent:
 		tabs = e.Tabs
 		return nil
 
@@ -57,13 +58,13 @@ func handleEvent(ev Event) error {
 	}
 }
 
-func executeCommand(cmd Command, conn net.Conn, pid int) error {
+func executeCommand(cmd command.Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
-	case ListCommand:
+	case command.ListCommand:
 		return listTabs(conn, pid)
 
-	case SelectCommand:
-		SendAction(os.Stdout, SelectAction(c))
+	case command.SelectCommand:
+		action.SendAction(os.Stdout, action.SelectAction{TabID: c.TabID})
 		return nil
 
 	default:

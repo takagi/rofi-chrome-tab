@@ -1,8 +1,10 @@
-package main
+package event
 
 import (
 	"encoding/json"
 	"fmt"
+
+	"rofi-chrome-tab/internal/model"
 )
 
 type Event interface {
@@ -10,7 +12,7 @@ type Event interface {
 }
 
 type UpdatedEvent struct {
-	Tabs []Tab `json:"tabs"`
+	Tabs []model.Tab `json:"tabs"`
 }
 
 func (UpdatedEvent) isEvent() {}

@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func TestStartCommandReceiver(t *testing.T) {
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Start the command receiver
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := StartCommandReceiver(pid, debug, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
@@ -151,7 +151,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Start the command receiver
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := StartCommandReceiver(pid, debug, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
@@ -190,7 +190,7 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	debug := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := StartCommandReceiver(pid, debug, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
