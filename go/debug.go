@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"os"
@@ -9,4 +9,4 @@ func IsDebugMode() bool {
 	return err == nil
 }
 
-var Debug = IsDebugMode()
+var debug = IsDebugMode()

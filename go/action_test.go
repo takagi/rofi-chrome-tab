@@ -1,4 +1,4 @@
-package protocol
+package main
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ func TestSendAction(t *testing.T) {
 	}
 
 	if result["command"] != "select" {
-		t.Errorf("unexpected command: got %v, want %v", result["command"], "select")
+		t.Errorf("unexpected type: got %v, want %v", result["type"], "select")
 	}
 	if result["tabId"] != float64(42) { // json.Unmarshal parses numbers as float64
 		t.Errorf("unexpected tabId: got %v, want %v", result["tabId"], 42)

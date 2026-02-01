@@ -1,4 +1,4 @@
-package receiver
+package main
 
 import (
 	"bytes"
@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"testing"
 	"time"
-
-	"rofi-chrome-tab/protocol"
 )
 
 func TestStartEventReceiver_ValidEvent(t *testing.T) {
@@ -22,15 +20,15 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan protocol.Event, 1)
+	evCh := make(chan Event, 1)
 
 	// Prepare test event
-	tabs := []protocol.Tab{
+	tabs := []Tab{
 		{ID: 1, Title: "Test Tab", Host: "example.com"},
 	}
 	event := struct {
-		Type string         `json:"type"`
-		Tabs []protocol.Tab `json:"tabs"`
+		Type string `json:"type"`
+		Tabs []Tab  `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,
@@ -43,7 +41,7 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	}
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
 	// Write length header and message to stdin
 	length := uint32(len(jsonData))
@@ -60,7 +58,7 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	// Wait for event to be received
 	select {
 	case ev := <-evCh:
-		updatedEv, ok := ev.(protocol.UpdatedEvent)
+		updatedEv, ok := ev.(UpdatedEvent)
 		if !ok {
 			t.Fatalf("Expected UpdatedEvent, got %T", ev)
 		}
@@ -84,10 +82,10 @@ func TestStartEventReceiver_EOF(t *testing.T) {
 	defer r.Close()
 
 	// Create local event channel
-	evCh := make(chan protocol.Event, 1)
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
 	// Close the write end to simulate EOF
 	w.Close()
@@ -109,10 +107,10 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan protocol.Event, 1)
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
 	// Write a length header that exceeds the max message size (10MB)
 	const maxMessageSize = 10 * 1024 * 1024
@@ -147,10 +145,10 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan protocol.Event, 1)
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
 	// Write invalid JSON
 	invalidJSON := []byte("not valid json")
@@ -177,10 +175,10 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	}
 
 	// Now send a valid event to verify the receiver is still running
-	tabs := []protocol.Tab{{ID: 2, Title: "Valid Tab", Host: "example.org"}}
+	tabs := []Tab{{ID: 2, Title: "Valid Tab", Host: "example.org"}}
 	event := struct {
-		Type string         `json:"type"`
-		Tabs []protocol.Tab `json:"tabs"`
+		Type string `json:"type"`
+		Tabs []Tab  `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,
@@ -204,11 +202,52 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	// Should receive the valid event
 	select {
 	case ev := <-evCh:
-		if _, ok := ev.(protocol.UpdatedEvent); !ok {
+		if _, ok := ev.(UpdatedEvent); !ok {
 			t.Fatalf("Expected UpdatedEvent, got %T", ev)
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Timeout waiting for valid event after invalid JSON")
+	}
+}
+
+func TestStartEventReceiver_PartialRead(t *testing.T) {
+	// Create a buffer to simulate stdin with incomplete data
+	var buf bytes.Buffer
+
+	// Write only 2 bytes of the 4-byte length header
+	buf.Write([]byte{0x01, 0x02})
+
+	// Create a pipe
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
+	defer r.Close()
+	defer w.Close()
+
+	// Create local event channel
+	evCh := make(chan Event, 1)
+
+	// Start the event receiver
+	startEventReceiver(r, evCh)
+
+	// Write partial length header
+	if _, err := w.Write([]byte{0x01, 0x02}); err != nil {
+		t.Fatalf("Failed to write partial data: %v", err)
+	}
+
+	// Close to trigger EOF mid-read
+	w.Close()
+
+	// Give the goroutine time to process and exit gracefully
+	time.Sleep(100 * time.Millisecond)
+
+	// Channel should be empty since we never sent a complete message
+	select {
+	case ev := <-evCh:
+		t.Fatalf("Expected no event due to incomplete read, got %T", ev)
+	default:
+		// Expected: no event received
 	}
 }
 
@@ -222,17 +261,17 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel with larger buffer
-	evCh := make(chan protocol.Event, 10)
+	evCh := make(chan Event, 10)
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
 	// Send multiple events
 	for i := 1; i <= 3; i++ {
-		tabs := []protocol.Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
+		tabs := []Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
 		event := struct {
-			Type string         `json:"type"`
-			Tabs []protocol.Tab `json:"tabs"`
+			Type string `json:"type"`
+			Tabs []Tab  `json:"tabs"`
 		}{
 			Type: "updated",
 			Tabs: tabs,
@@ -259,7 +298,7 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	for i := 1; i <= 3; i++ {
 		select {
 		case ev := <-evCh:
-			updatedEv, ok := ev.(protocol.UpdatedEvent)
+			updatedEv, ok := ev.(UpdatedEvent)
 			if !ok {
 				t.Fatalf("Event %d: Expected UpdatedEvent, got %T", i, ev)
 			}
@@ -275,14 +314,8 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	}
 }
 
-func TestStartEventReceiver_PartialRead(t *testing.T) {
-	// Create a buffer to simulate stdin with incomplete data
-	var buf bytes.Buffer
-
-	// Write only 2 bytes of the 4-byte length header
-	buf.Write([]byte{0x01, 0x02})
-
-	// Create a pipe
+func TestStartEventReceiver_EmptyMessage(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -291,26 +324,27 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan protocol.Event, 1)
+	evCh := make(chan Event, 1)
 
 	// Start the event receiver
-	StartEventReceiver(r, evCh)
+	startEventReceiver(r, evCh)
 
-	// Write partial length header
-	if _, err := w.Write([]byte{0x01, 0x02}); err != nil {
-		t.Fatalf("Failed to write partial data: %v", err)
+	// Write a zero-length message
+	length := uint32(0)
+	var lenBuf [4]byte
+	binary.LittleEndian.PutUint32(lenBuf[:], length)
+
+	if _, err := w.Write(lenBuf[:]); err != nil {
+		t.Fatalf("Failed to write length header: %v", err)
 	}
 
-	// Close to trigger EOF mid-read
-	w.Close()
-
-	// Give the goroutine time to process and exit gracefully
+	// Give the goroutine time to process
 	time.Sleep(100 * time.Millisecond)
 
-	// Channel should be empty since we never sent a complete message
+	// Should not receive any event (empty message can't be parsed)
 	select {
 	case ev := <-evCh:
-		t.Fatalf("Expected no event due to incomplete read, got %T", ev)
+		t.Fatalf("Expected no event for empty message, got %T", ev)
 	default:
 		// Expected: no event received
 	}

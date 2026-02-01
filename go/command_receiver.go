@@ -1,4 +1,4 @@
-package receiver
+package main
 
 import (
 	"bufio"
@@ -7,24 +7,15 @@ import (
 	"net"
 	"os"
 	"strings"
-
-	"rofi-chrome-tab/protocol"
 )
 
-type CommandWithConn struct {
-	Cmd  protocol.Command
-	Conn net.Conn
-}
-
-// GetSocketPath returns the Unix domain socket path based on the process ID and debug mode.
-func GetSocketPath(processID int, debugMode bool) string {
+func startCommandReceiver(pid int, debugMode bool, cmdCh chan CommandWithConn) string {
+	// Determine socket path based on process ID and debug mode
+	socketPath := "/tmp/native-app.sock"
 	if !debugMode {
-		return fmt.Sprintf("/tmp/native-app.%d.sock", processID)
+		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	}
-	return "/tmp/native-app.sock"
-}
 
-func StartCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
@@ -59,7 +50,7 @@ func StartCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 
 				line := strings.TrimSpace(scanner.Text())
 
-				cmd, err := protocol.ParseCommand(line)
+				cmd, err := ParseCommand(line)
 				if err != nil {
 					log.Println("Parse error:", err, "line:", line)
 					c.Close()
@@ -71,4 +62,6 @@ func StartCommandReceiver(socketPath string, cmdCh chan CommandWithConn) {
 			}(conn)
 		}
 	}()
+
+	return socketPath
 }

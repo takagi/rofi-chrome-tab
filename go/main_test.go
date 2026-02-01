@@ -3,8 +3,6 @@ package main
 import (
 	"bytes"
 	"testing"
-
-	"rofi-chrome-tab/protocol"
 )
 
 func TestListTabs(t *testing.T) {
@@ -15,7 +13,7 @@ func TestListTabs(t *testing.T) {
 	}()
 
 	// Set up test tabs
-	tabs = []protocol.Tab{
+	tabs = []Tab{
 		{ID: 1, Title: "Tab 1", Host: "example.com"},
 		{ID: 2, Title: "Tab 2", Host: "google.com"},
 	}
@@ -66,7 +64,7 @@ func TestListTabsEmptyTabs(t *testing.T) {
 	}()
 
 	// Set up empty tabs
-	tabs = []protocol.Tab{}
+	tabs = []Tab{}
 
 	var buf bytes.Buffer
 	err := listTabs(&buf, 12345)
