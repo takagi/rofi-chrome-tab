@@ -15,7 +15,6 @@ import (
 	"rofi-chrome-tab/internal/event"
 	"rofi-chrome-tab/internal/eventreceiver"
 	"rofi-chrome-tab/internal/logging"
-	"rofi-chrome-tab/internal/state"
 	"rofi-chrome-tab/internal/types"
 )
 
@@ -27,10 +26,9 @@ func Run() error {
 	defer logCloser.Close()
 
 	pid := os.Getpid()
-	st := &state.State{}
-
 	evCh := make(chan event.Event, 1)
 	cmdCh := make(chan commandreceiver.CommandWithConn, 1)
+	var tabs []types.Tab
 
 	eventreceiver.Start(os.Stdin, evCh)
 	_ = commandreceiver.Start(pid, debug.IsDebugMode(), cmdCh)
@@ -38,11 +36,11 @@ func Run() error {
 	for {
 		select {
 		case ev := <-evCh:
-			if err := handleEvent(st, ev); err != nil {
+			if err := handleEvent(&tabs, ev); err != nil {
 				log.Println("Error handling event:", err)
 			}
 		case cw := <-cmdCh:
-			if err := executeCommand(st, cw.Cmd, cw.Conn, pid); err != nil {
+			if err := executeCommand(tabs, cw.Cmd, cw.Conn, pid); err != nil {
 				log.Println("Command error:", err)
 			}
 			cw.Conn.Close()
@@ -50,20 +48,20 @@ func Run() error {
 	}
 }
 
-func handleEvent(st *state.State, ev event.Event) error {
+func handleEvent(tabs *[]types.Tab, ev event.Event) error {
 	switch e := ev.(type) {
 	case event.UpdatedEvent:
-		st.SetTabs(e.Tabs)
+		*tabs = e.Tabs
 		return nil
 	default:
 		return fmt.Errorf("unknown event type: %T", ev)
 	}
 }
 
-func executeCommand(st *state.State, cmd command.Command, conn net.Conn, pid int) error {
+func executeCommand(tabs []types.Tab, cmd command.Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
 	case command.ListCommand:
-		return listTabs(conn, st.Tabs(), pid)
+		return listTabs(conn, tabs, pid)
 	case command.SelectCommand:
 		return action.SendAction(os.Stdout, action.SelectAction{TabID: c.TabID})
 	default:
