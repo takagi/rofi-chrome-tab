@@ -8,11 +8,11 @@ import (
 	"os"
 	"strings"
 
-	"rofi-chrome-tab/internal/command"
+	"rofi-chrome-tab/internal/protocol"
 )
 
 type CommandWithConn struct {
-	Cmd  command.Command
+	Cmd  protocol.Command
 	Conn net.Conn
 }
 
@@ -57,7 +57,7 @@ func Start(pid int, debugMode bool, cmdCh chan<- CommandWithConn) string {
 
 				line := strings.TrimSpace(scanner.Text())
 
-				cmd, err := command.ParseCommand(line)
+				cmd, err := protocol.ParseCommand(line)
 				if err != nil {
 					log.Println("Parse error:", err, "line:", line)
 					c.Close()

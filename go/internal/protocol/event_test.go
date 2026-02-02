@@ -1,23 +1,21 @@
-package event
+package protocol
 
 import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
 	"testing"
-
-	"rofi-chrome-tab/internal/types"
 )
 
 func TestParseEvent(t *testing.T) {
-	tabs := []types.Tab{
+	tabs := []Tab{
 		{ID: 1, Title: "Tab1", Host: "example.com"},
 		{ID: 2, Title: "Tab2", Host: "example.org"},
 	}
 
 	event := struct {
-		Type string      `json:"type"`
-		Tabs []types.Tab `json:"tabs"`
+		Type string `json:"type"`
+		Tabs []Tab  `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,
@@ -66,10 +64,10 @@ func TestParseEventInvalidJSON(t *testing.T) {
 }
 
 func TestParseEventWithReceiverEncoding(t *testing.T) {
-	tabs := []types.Tab{{ID: 1, Title: "Tab1", Host: "example.com"}}
+	tabs := []Tab{{ID: 1, Title: "Tab1", Host: "example.com"}}
 	event := struct {
-		Type string      `json:"type"`
-		Tabs []types.Tab `json:"tabs"`
+		Type string `json:"type"`
+		Tabs []Tab  `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,

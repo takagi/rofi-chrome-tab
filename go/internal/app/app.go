@@ -8,14 +8,11 @@ import (
 	"net"
 	"os"
 
-	"rofi-chrome-tab/internal/action"
-	"rofi-chrome-tab/internal/command"
 	"rofi-chrome-tab/internal/command_receiver"
 	"rofi-chrome-tab/internal/debug"
-	"rofi-chrome-tab/internal/event"
 	"rofi-chrome-tab/internal/event_receiver"
 	"rofi-chrome-tab/internal/logging"
-	"rofi-chrome-tab/internal/types"
+	"rofi-chrome-tab/internal/protocol"
 )
 
 // Main
@@ -28,9 +25,9 @@ func Run() error {
 	defer logCloser.Close()
 
 	pid := os.Getpid()
-	evCh := make(chan event.Event, 1)
+	evCh := make(chan protocol.Event, 1)
 	cmdCh := make(chan command_receiver.CommandWithConn, 1)
-	var tabs []types.Tab
+	var tabs []protocol.Tab
 
 	event_receiver.Start(os.Stdin, evCh)
 	_ = command_receiver.Start(pid, debug.IsDebugMode(), cmdCh)
@@ -50,9 +47,9 @@ func Run() error {
 	}
 }
 
-func handleEvent(tabs *[]types.Tab, ev event.Event) error {
+func handleEvent(tabs *[]protocol.Tab, ev protocol.Event) error {
 	switch e := ev.(type) {
-	case event.UpdatedEvent:
+	case protocol.UpdatedEvent:
 		*tabs = e.Tabs
 		return nil
 	default:
@@ -60,18 +57,18 @@ func handleEvent(tabs *[]types.Tab, ev event.Event) error {
 	}
 }
 
-func executeCommand(tabs []types.Tab, cmd command.Command, conn net.Conn, pid int) error {
+func executeCommand(tabs []protocol.Tab, cmd protocol.Command, conn net.Conn, pid int) error {
 	switch c := cmd.(type) {
-	case command.ListCommand:
+	case protocol.ListCommand:
 		return listTabs(conn, tabs, pid)
-	case command.SelectCommand:
-		return action.SendAction(os.Stdout, action.SelectAction{TabID: c.TabID})
+	case protocol.SelectCommand:
+		return protocol.SendAction(os.Stdout, protocol.SelectAction{TabID: c.TabID})
 	default:
 		return fmt.Errorf("unknown command type: %T", cmd)
 	}
 }
 
-func listTabs(w io.Writer, tabs []types.Tab, pid int) error {
+func listTabs(w io.Writer, tabs []protocol.Tab, pid int) error {
 	writer := bufio.NewWriter(w)
 	defer writer.Flush()
 

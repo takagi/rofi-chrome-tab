@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"rofi-chrome-tab/internal/command"
+	"rofi-chrome-tab/internal/protocol"
 )
 
 func TestStartCommandReceiver(t *testing.T) {
@@ -41,7 +41,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			if _, ok := cmdWithConn.Cmd.(command.ListCommand); !ok {
+			if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 				t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 			}
 			if cmdWithConn.Conn == nil {
@@ -69,7 +69,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			selectCmd, ok := cmdWithConn.Cmd.(command.SelectCommand)
+			selectCmd, ok := cmdWithConn.Cmd.(protocol.SelectCommand)
 			if !ok {
 				t.Errorf("Expected SelectCommand, got %T", cmdWithConn.Cmd)
 			}
@@ -120,7 +120,7 @@ func TestStartCommandReceiver(t *testing.T) {
 
 			select {
 			case cmdWithConn := <-testCmdCh:
-				if _, ok := cmdWithConn.Cmd.(command.ListCommand); !ok {
+				if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 					t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 				}
 				cmdWithConn.Conn.Close()
@@ -172,7 +172,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Wait for command to be received on channel
 	select {
 	case cmdWithConn := <-testCmdCh:
-		if _, ok := cmdWithConn.Cmd.(command.ListCommand); !ok {
+		if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 			t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 		}
 		cmdWithConn.Conn.Close()

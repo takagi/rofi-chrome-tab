@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"testing"
 
-	"rofi-chrome-tab/internal/types"
+	"rofi-chrome-tab/internal/protocol"
 )
 
 func TestListTabs(t *testing.T) {
 	// Set up test tabs
-	tabs := []types.Tab{
+	tabs := []protocol.Tab{
 		{ID: 1, Title: "Tab 1", Host: "example.com"},
 		{ID: 2, Title: "Tab 2", Host: "google.com"},
 	}

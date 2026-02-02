@@ -5,10 +5,10 @@ import (
 	"io"
 	"log"
 
-	"rofi-chrome-tab/internal/event"
+	"rofi-chrome-tab/internal/protocol"
 )
 
-func Start(r io.Reader, evCh chan<- event.Event) {
+func Start(r io.Reader, evCh chan<- protocol.Event) {
 	// Receive events from stdin
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
@@ -43,7 +43,7 @@ func Start(r io.Reader, evCh chan<- event.Event) {
 			}
 
 			// Parse event from bytes
-			ev, err := event.ParseEvent(buf)
+			ev, err := protocol.ParseEvent(buf)
 			if err != nil {
 				log.Println("Error parsing event:", err)
 				continue

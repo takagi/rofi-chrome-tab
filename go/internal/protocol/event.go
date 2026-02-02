@@ -1,10 +1,8 @@
-package event
+package protocol
 
 import (
 	"encoding/json"
 	"fmt"
-
-	"rofi-chrome-tab/internal/types"
 )
 
 type Event interface {
@@ -12,7 +10,7 @@ type Event interface {
 }
 
 type UpdatedEvent struct {
-	Tabs []types.Tab `json:"tabs"`
+	Tabs []Tab `json:"tabs"`
 }
 
 func (UpdatedEvent) isEvent() {}
