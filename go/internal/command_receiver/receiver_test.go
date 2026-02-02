@@ -1,4 +1,4 @@
-package commandreceiver
+package command_receiver
 
 import (
 	"fmt"

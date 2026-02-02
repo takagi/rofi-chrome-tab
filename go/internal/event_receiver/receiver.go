@@ -1,4 +1,4 @@
-package eventreceiver
+package event_receiver
 
 import (
 	"encoding/binary"

@@ -10,10 +10,10 @@ import (
 
 	"rofi-chrome-tab/internal/action"
 	"rofi-chrome-tab/internal/command"
-	"rofi-chrome-tab/internal/commandreceiver"
+	"rofi-chrome-tab/internal/command_receiver"
 	"rofi-chrome-tab/internal/debug"
 	"rofi-chrome-tab/internal/event"
-	"rofi-chrome-tab/internal/eventreceiver"
+	"rofi-chrome-tab/internal/event_receiver"
 	"rofi-chrome-tab/internal/logging"
 	"rofi-chrome-tab/internal/types"
 )
@@ -27,11 +27,11 @@ func Run() error {
 
 	pid := os.Getpid()
 	evCh := make(chan event.Event, 1)
-	cmdCh := make(chan commandreceiver.CommandWithConn, 1)
+	cmdCh := make(chan command_receiver.CommandWithConn, 1)
 	var tabs []types.Tab
 
-	eventreceiver.Start(os.Stdin, evCh)
-	_ = commandreceiver.Start(pid, debug.IsDebugMode(), cmdCh)
+	event_receiver.Start(os.Stdin, evCh)
+	_ = command_receiver.Start(pid, debug.IsDebugMode(), cmdCh)
 
 	for {
 		select {
