@@ -33,7 +33,7 @@ func Run() error {
 	cmdCh := make(chan commandreceiver.CommandWithConn, 1)
 
 	eventreceiver.Start(os.Stdin, evCh)
-	_ = commandreceiver.Start(pid, debug.Enabled, cmdCh)
+	_ = commandreceiver.Start(pid, debug.IsDebugMode(), cmdCh)
 
 	for {
 		select {
