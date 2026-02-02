@@ -1,8 +1,6 @@
-package main
+package protocol
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestParseCommand(t *testing.T) {
 	tests := []struct {

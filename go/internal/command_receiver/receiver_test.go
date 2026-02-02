@@ -1,4 +1,4 @@
-package main
+package command_receiver
 
 import (
 	"fmt"
@@ -6,16 +6,18 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"rofi-chrome-tab/internal/protocol"
 )
 
 func TestStartCommandReceiver(t *testing.T) {
 	// Set up test environment
 	pid := 12345
-	debug := false
+	debugMode := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Start the command receiver
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
@@ -32,15 +34,14 @@ func TestStartCommandReceiver(t *testing.T) {
 		defer conn.Close()
 
 		// Send a list command
-		_, err = conn.Write([]byte("list\n"))
-		if err != nil {
+		if _, err := conn.Write([]byte("list\n")); err != nil {
 			t.Fatalf("Failed to write command: %v", err)
 		}
 
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+			if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 				t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 			}
 			if cmdWithConn.Conn == nil {
@@ -61,15 +62,14 @@ func TestStartCommandReceiver(t *testing.T) {
 		defer conn.Close()
 
 		// Send a select command
-		_, err = conn.Write([]byte("select 123\n"))
-		if err != nil {
+		if _, err := conn.Write([]byte("select 123\n")); err != nil {
 			t.Fatalf("Failed to write command: %v", err)
 		}
 
 		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
-			selectCmd, ok := cmdWithConn.Cmd.(SelectCommand)
+			selectCmd, ok := cmdWithConn.Cmd.(protocol.SelectCommand)
 			if !ok {
 				t.Errorf("Expected SelectCommand, got %T", cmdWithConn.Cmd)
 			}
@@ -100,8 +100,7 @@ func TestStartCommandReceiver(t *testing.T) {
 				}
 				defer conn.Close()
 
-				_, err = conn.Write([]byte("list\n"))
-				if err != nil {
+				if _, err := conn.Write([]byte("list\n")); err != nil {
 					t.Errorf("Connection %d write failed: %v", id, err)
 					done <- struct{}{}
 					return
@@ -121,7 +120,7 @@ func TestStartCommandReceiver(t *testing.T) {
 
 			select {
 			case cmdWithConn := <-testCmdCh:
-				if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+				if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 					t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 				}
 				cmdWithConn.Conn.Close()
@@ -135,8 +134,7 @@ func TestStartCommandReceiver(t *testing.T) {
 func waitForSocket(socketPath string, timeout time.Duration) error {
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
-		_, err := os.Stat(socketPath)
-		if err == nil {
+		if _, err := os.Stat(socketPath); err == nil {
 			return nil
 		}
 		time.Sleep(10 * time.Millisecond)
@@ -147,11 +145,11 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 func TestStartCommandReceiverDebugMode(t *testing.T) {
 	// Set up test environment in debug mode
 	pid := 12345
-	debug := true
+	debugMode := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
 	// Start the command receiver
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
@@ -167,15 +165,14 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 	defer conn.Close()
 
 	// Send a list command
-	_, err = conn.Write([]byte("list\n"))
-	if err != nil {
+	if _, err := conn.Write([]byte("list\n")); err != nil {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 
 	// Wait for command to be received on channel
 	select {
 	case cmdWithConn := <-testCmdCh:
-		if _, ok := cmdWithConn.Cmd.(ListCommand); !ok {
+		if _, ok := cmdWithConn.Cmd.(protocol.ListCommand); !ok {
 			t.Errorf("Expected ListCommand, got %T", cmdWithConn.Cmd)
 		}
 		cmdWithConn.Conn.Close()
@@ -187,10 +184,10 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	// Set up test environment
 	pid := 12346
-	debug := false
+	debugMode := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
-	socketPath := startCommandReceiver(pid, debug, testCmdCh)
+	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
 	// Wait for socket to be ready with retry logic
@@ -206,8 +203,7 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	defer conn.Close()
 
 	// Send an invalid command
-	_, err = conn.Write([]byte("invalid\n"))
-	if err != nil {
+	if _, err := conn.Write([]byte("invalid\n")); err != nil {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 

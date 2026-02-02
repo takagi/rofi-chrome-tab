@@ -1,4 +1,4 @@
-package main
+package event_receiver
 
 import (
 	"bytes"
@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"rofi-chrome-tab/internal/protocol"
 )
 
 func TestStartEventReceiver_ValidEvent(t *testing.T) {
@@ -20,28 +22,27 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Prepare test event
-	tabs := []Tab{
+	tabs := []protocol.Tab{
 		{ID: 1, Title: "Test Tab", Host: "example.com"},
 	}
-	event := struct {
-		Type string `json:"type"`
-		Tabs []Tab  `json:"tabs"`
+	ev := struct {
+		Type string         `json:"type"`
+		Tabs []protocol.Tab `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,
 	}
 
-	// Marshal event to JSON
-	jsonData, err := json.Marshal(event)
+	jsonData, err := json.Marshal(ev)
 	if err != nil {
 		t.Fatalf("Failed to marshal event: %v", err)
 	}
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Write length header and message to stdin
 	length := uint32(len(jsonData))
@@ -57,10 +58,10 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 
 	// Wait for event to be received
 	select {
-	case ev := <-evCh:
-		updatedEv, ok := ev.(UpdatedEvent)
+	case got := <-evCh:
+		updatedEv, ok := got.(protocol.UpdatedEvent)
 		if !ok {
-			t.Fatalf("Expected UpdatedEvent, got %T", ev)
+			t.Fatalf("Expected UpdatedEvent, got %T", got)
 		}
 		if len(updatedEv.Tabs) != 1 {
 			t.Fatalf("Expected 1 tab, got %d", len(updatedEv.Tabs))
@@ -82,10 +83,10 @@ func TestStartEventReceiver_EOF(t *testing.T) {
 	defer r.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Close the write end to simulate EOF
 	w.Close()
@@ -107,10 +108,10 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Write a length header that exceeds the max message size (10MB)
 	const maxMessageSize = 10 * 1024 * 1024
@@ -128,8 +129,8 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	// The receiver should have exited due to oversized message
 	// Channel should be empty
 	select {
-	case ev := <-evCh:
-		t.Fatalf("Expected no event due to oversized message, got %T", ev)
+	case got := <-evCh:
+		t.Fatalf("Expected no event due to oversized message, got %T", got)
 	default:
 		// Expected: no event received
 	}
@@ -145,10 +146,10 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Write invalid JSON
 	invalidJSON := []byte("not valid json")
@@ -168,23 +169,23 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 
 	// The receiver should continue running and not send an event
 	select {
-	case ev := <-evCh:
-		t.Fatalf("Expected no event due to invalid JSON, got %T", ev)
+	case got := <-evCh:
+		t.Fatalf("Expected no event due to invalid JSON, got %T", got)
 	default:
 		// Expected: no event received
 	}
 
 	// Now send a valid event to verify the receiver is still running
-	tabs := []Tab{{ID: 2, Title: "Valid Tab", Host: "example.org"}}
-	event := struct {
-		Type string `json:"type"`
-		Tabs []Tab  `json:"tabs"`
+	tabs := []protocol.Tab{{ID: 2, Title: "Valid Tab", Host: "example.org"}}
+	ev := struct {
+		Type string         `json:"type"`
+		Tabs []protocol.Tab `json:"tabs"`
 	}{
 		Type: "updated",
 		Tabs: tabs,
 	}
 
-	jsonData, err := json.Marshal(event)
+	jsonData, err := json.Marshal(ev)
 	if err != nil {
 		t.Fatalf("Failed to marshal event: %v", err)
 	}
@@ -201,9 +202,9 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 
 	// Should receive the valid event
 	select {
-	case ev := <-evCh:
-		if _, ok := ev.(UpdatedEvent); !ok {
-			t.Fatalf("Expected UpdatedEvent, got %T", ev)
+	case got := <-evCh:
+		if _, ok := got.(protocol.UpdatedEvent); !ok {
+			t.Fatalf("Expected UpdatedEvent, got %T", got)
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Timeout waiting for valid event after invalid JSON")
@@ -226,10 +227,10 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Write partial length header
 	if _, err := w.Write([]byte{0x01, 0x02}); err != nil {
@@ -244,8 +245,8 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 
 	// Channel should be empty since we never sent a complete message
 	select {
-	case ev := <-evCh:
-		t.Fatalf("Expected no event due to incomplete read, got %T", ev)
+	case got := <-evCh:
+		t.Fatalf("Expected no event due to incomplete read, got %T", got)
 	default:
 		// Expected: no event received
 	}
@@ -261,23 +262,23 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel with larger buffer
-	evCh := make(chan Event, 10)
+	evCh := make(chan protocol.Event, 10)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Send multiple events
 	for i := 1; i <= 3; i++ {
-		tabs := []Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
-		event := struct {
-			Type string `json:"type"`
-			Tabs []Tab  `json:"tabs"`
+		tabs := []protocol.Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
+		ev := struct {
+			Type string         `json:"type"`
+			Tabs []protocol.Tab `json:"tabs"`
 		}{
 			Type: "updated",
 			Tabs: tabs,
 		}
 
-		jsonData, err := json.Marshal(event)
+		jsonData, err := json.Marshal(ev)
 		if err != nil {
 			t.Fatalf("Failed to marshal event %d: %v", i, err)
 		}
@@ -297,10 +298,10 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	// Receive all three events
 	for i := 1; i <= 3; i++ {
 		select {
-		case ev := <-evCh:
-			updatedEv, ok := ev.(UpdatedEvent)
+		case got := <-evCh:
+			updatedEv, ok := got.(protocol.UpdatedEvent)
 			if !ok {
-				t.Fatalf("Event %d: Expected UpdatedEvent, got %T", i, ev)
+				t.Fatalf("Event %d: Expected UpdatedEvent, got %T", i, got)
 			}
 			if len(updatedEv.Tabs) != 1 {
 				t.Fatalf("Event %d: Expected 1 tab, got %d", i, len(updatedEv.Tabs))
@@ -324,10 +325,10 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 	defer w.Close()
 
 	// Create local event channel
-	evCh := make(chan Event, 1)
+	evCh := make(chan protocol.Event, 1)
 
 	// Start the event receiver
-	startEventReceiver(r, evCh)
+	Start(r, evCh)
 
 	// Write a zero-length message
 	length := uint32(0)
@@ -343,8 +344,8 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 
 	// Should not receive any event (empty message can't be parsed)
 	select {
-	case ev := <-evCh:
-		t.Fatalf("Expected no event for empty message, got %T", ev)
+	case got := <-evCh:
+		t.Fatalf("Expected no event for empty message, got %T", got)
 	default:
 		// Expected: no event received
 	}
