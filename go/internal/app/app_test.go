@@ -1,19 +1,14 @@
-package main
+package app
 
 import (
 	"bytes"
 	"testing"
+
+	"rofi-chrome-tab/internal/types"
 )
 
 func TestListTabs(t *testing.T) {
-	// Save original tabs and restore after test
-	originalTabs := tabs
-	defer func() {
-		tabs = originalTabs
-	}()
-
-	// Set up test tabs
-	tabs = []Tab{
+	tabs := []types.Tab{
 		{ID: 1, Title: "Tab 1", Host: "example.com"},
 		{ID: 2, Title: "Tab 2", Host: "google.com"},
 	}
@@ -43,7 +38,7 @@ func TestListTabs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			err := listTabs(&buf, tt.pid)
+			err := listTabs(&buf, tabs, tt.pid)
 			if err != nil {
 				t.Fatalf("listTabs() error = %v", err)
 			}
@@ -57,17 +52,8 @@ func TestListTabs(t *testing.T) {
 }
 
 func TestListTabsEmptyTabs(t *testing.T) {
-	// Save original tabs and restore after test
-	originalTabs := tabs
-	defer func() {
-		tabs = originalTabs
-	}()
-
-	// Set up empty tabs
-	tabs = []Tab{}
-
 	var buf bytes.Buffer
-	err := listTabs(&buf, 12345)
+	err := listTabs(&buf, nil, 12345)
 	if err != nil {
 		t.Fatalf("listTabs() error = %v", err)
 	}

@@ -1,17 +1,17 @@
-package main
+package eventreceiver
 
 import (
 	"encoding/binary"
 	"io"
 	"log"
+
+	"rofi-chrome-tab/internal/event"
 )
 
-func startEventReceiver(r io.Reader, evCh chan Event) {
-	// Receive events from stdin
+func Start(r io.Reader, evCh chan<- event.Event) {
 	go func() {
 		const maxMessageSize = 10 * 1024 * 1024 // 10MB limit
 		for {
-			// Read 4-byte length header
 			lenBuf := make([]byte, 4)
 			if _, err := io.ReadFull(r, lenBuf); err != nil {
 				if err == io.EOF {
@@ -23,13 +23,11 @@ func startEventReceiver(r io.Reader, evCh chan Event) {
 			}
 			length := binary.LittleEndian.Uint32(lenBuf)
 
-			// Validate message length to prevent excessive memory allocation
 			if length > maxMessageSize {
 				log.Printf("Message too large: %d bytes (max %d bytes), closing stdin receiver", length, maxMessageSize)
 				return
 			}
 
-			// Read message body
 			buf := make([]byte, length)
 			if _, err := io.ReadFull(r, buf); err != nil {
 				if err == io.EOF {
@@ -40,8 +38,7 @@ func startEventReceiver(r io.Reader, evCh chan Event) {
 				return
 			}
 
-			// Parse event from bytes
-			ev, err := ParseEvent(buf)
+			ev, err := event.ParseEvent(buf)
 			if err != nil {
 				log.Println("Error parsing event:", err)
 				continue

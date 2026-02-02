@@ -1,4 +1,4 @@
-package main
+package types
 
 type Tab struct {
 	ID    int    `json:"id"`
