@@ -62,7 +62,7 @@ func executeCommand(tabs []protocol.Tab, cmd protocol.Command, conn net.Conn, pi
 	case protocol.ListCommand:
 		return listTabs(conn, tabs, pid)
 	case protocol.SelectCommand:
-		return protocol.SendAction(os.Stdout, protocol.SelectAction{TabID: c.TabID})
+		return protocol.SendAction(os.Stdout, protocol.SelectAction(c))
 	default:
 		return fmt.Errorf("unknown command type: %T", cmd)
 	}
