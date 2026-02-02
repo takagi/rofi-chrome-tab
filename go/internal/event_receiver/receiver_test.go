@@ -14,6 +14,7 @@ import (
 )
 
 func TestStartEventReceiver_ValidEvent(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -21,8 +22,10 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Prepare test event
 	tabs := []types.Tab{
 		{ID: 1, Title: "Test Tab", Host: "example.com"},
 	}
@@ -39,8 +42,10 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 		t.Fatalf("Failed to marshal event: %v", err)
 	}
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Write length header and message to stdin
 	length := uint32(len(jsonData))
 	var lenBuf [4]byte
 	binary.LittleEndian.PutUint32(lenBuf[:], length)
@@ -52,6 +57,7 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 		t.Fatalf("Failed to write JSON data: %v", err)
 	}
 
+	// Wait for event to be received
 	select {
 	case got := <-evCh:
 		updatedEv, ok := got.(event.UpdatedEvent)
@@ -70,21 +76,31 @@ func TestStartEventReceiver_ValidEvent(t *testing.T) {
 }
 
 func TestStartEventReceiver_EOF(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
 	}
 	defer r.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Close the write end to simulate EOF
 	w.Close()
+
+	// Give the goroutine time to detect EOF and exit
 	time.Sleep(100 * time.Millisecond)
+
+	// If we got here without hanging, the test passes
+	// The receiver should handle EOF gracefully and exit
 }
 
 func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -92,10 +108,13 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Write a length header that exceeds the max message size (10MB)
 	const maxMessageSize = 10 * 1024 * 1024
 	length := uint32(maxMessageSize + 1)
 	var lenBuf [4]byte
@@ -105,16 +124,21 @@ func TestStartEventReceiver_MessageTooLarge(t *testing.T) {
 		t.Fatalf("Failed to write length header: %v", err)
 	}
 
+	// Give the goroutine time to process and reject the message
 	time.Sleep(100 * time.Millisecond)
 
+	// The receiver should have exited due to oversized message
+	// Channel should be empty
 	select {
 	case got := <-evCh:
 		t.Fatalf("Expected no event due to oversized message, got %T", got)
 	default:
+		// Expected: no event received
 	}
 }
 
 func TestStartEventReceiver_InvalidJSON(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -122,10 +146,13 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Write invalid JSON
 	invalidJSON := []byte("not valid json")
 	length := uint32(len(invalidJSON))
 	var lenBuf [4]byte
@@ -138,14 +165,18 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 		t.Fatalf("Failed to write invalid JSON: %v", err)
 	}
 
+	// Give the goroutine time to process the invalid message
 	time.Sleep(100 * time.Millisecond)
 
+	// The receiver should continue running and not send an event
 	select {
 	case got := <-evCh:
 		t.Fatalf("Expected no event due to invalid JSON, got %T", got)
 	default:
+		// Expected: no event received
 	}
 
+	// Now send a valid event to verify the receiver is still running
 	tabs := []types.Tab{{ID: 2, Title: "Valid Tab", Host: "example.org"}}
 	ev := struct {
 		Type string      `json:"type"`
@@ -170,6 +201,7 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 		t.Fatalf("Failed to write JSON data: %v", err)
 	}
 
+	// Should receive the valid event
 	select {
 	case got := <-evCh:
 		if _, ok := got.(event.UpdatedEvent); !ok {
@@ -181,9 +213,12 @@ func TestStartEventReceiver_InvalidJSON(t *testing.T) {
 }
 
 func TestStartEventReceiver_PartialRead(t *testing.T) {
+	// Create a buffer to simulate stdin with incomplete data
 	var buf bytes.Buffer
+	// Write only 2 bytes of the 4-byte length header
 	buf.Write([]byte{0x01, 0x02})
 
+	// Create a pipe
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -191,26 +226,34 @@ func TestStartEventReceiver_PartialRead(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Write partial length header
 	if _, err := w.Write([]byte{0x01, 0x02}); err != nil {
 		t.Fatalf("Failed to write partial data: %v", err)
 	}
 
+	// Close to trigger EOF mid-read
 	w.Close()
 
+	// Give the goroutine time to process and exit gracefully
 	time.Sleep(100 * time.Millisecond)
 
+	// Channel should be empty since we never sent a complete message
 	select {
 	case got := <-evCh:
 		t.Fatalf("Expected no event due to incomplete read, got %T", got)
 	default:
+		// Expected: no event received
 	}
 }
 
 func TestStartEventReceiver_MultipleEvents(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -218,10 +261,13 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel with larger buffer
 	evCh := make(chan event.Event, 10)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Send multiple events
 	for i := 1; i <= 3; i++ {
 		tabs := []types.Tab{{ID: i, Title: "Tab " + strconv.Itoa(i), Host: "example.com"}}
 		ev := struct {
@@ -249,6 +295,7 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 		}
 	}
 
+	// Receive all three events
 	for i := 1; i <= 3; i++ {
 		select {
 		case got := <-evCh:
@@ -269,6 +316,7 @@ func TestStartEventReceiver_MultipleEvents(t *testing.T) {
 }
 
 func TestStartEventReceiver_EmptyMessage(t *testing.T) {
+	// Create a pipe to simulate stdin
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("Failed to create pipe: %v", err)
@@ -276,10 +324,13 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 	defer r.Close()
 	defer w.Close()
 
+	// Create local event channel
 	evCh := make(chan event.Event, 1)
 
+	// Start the event receiver
 	Start(r, evCh)
 
+	// Write a zero-length message
 	length := uint32(0)
 	var lenBuf [4]byte
 	binary.LittleEndian.PutUint32(lenBuf[:], length)
@@ -288,11 +339,14 @@ func TestStartEventReceiver_EmptyMessage(t *testing.T) {
 		t.Fatalf("Failed to write length header: %v", err)
 	}
 
+	// Give the goroutine time to process
 	time.Sleep(100 * time.Millisecond)
 
+	// Should not receive any event (empty message can't be parsed)
 	select {
 	case got := <-evCh:
 		t.Fatalf("Expected no event for empty message, got %T", got)
 	default:
+		// Expected: no event received
 	}
 }

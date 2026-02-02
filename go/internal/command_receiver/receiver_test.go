@@ -11,17 +11,21 @@ import (
 )
 
 func TestStartCommandReceiver(t *testing.T) {
+	// Set up test environment
 	pid := 12345
 	debugMode := false
 	testCmdCh := make(chan CommandWithConn, 1)
 
+	// Start the command receiver
 	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
+	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
 		t.Fatalf("Socket not ready: %v", err)
 	}
 
+	// Test 1: Connect to the socket and send a list command
 	t.Run("list command", func(t *testing.T) {
 		conn, err := net.Dial("unix", socketPath)
 		if err != nil {
@@ -29,10 +33,12 @@ func TestStartCommandReceiver(t *testing.T) {
 		}
 		defer conn.Close()
 
+		// Send a list command
 		if _, err := conn.Write([]byte("list\n")); err != nil {
 			t.Fatalf("Failed to write command: %v", err)
 		}
 
+		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
 			if _, ok := cmdWithConn.Cmd.(command.ListCommand); !ok {
@@ -47,6 +53,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		}
 	})
 
+	// Test 2: Send a select command
 	t.Run("select command", func(t *testing.T) {
 		conn, err := net.Dial("unix", socketPath)
 		if err != nil {
@@ -54,10 +61,12 @@ func TestStartCommandReceiver(t *testing.T) {
 		}
 		defer conn.Close()
 
+		// Send a select command
 		if _, err := conn.Write([]byte("select 123\n")); err != nil {
 			t.Fatalf("Failed to write command: %v", err)
 		}
 
+		// Wait for command to be received on channel
 		select {
 		case cmdWithConn := <-testCmdCh:
 			selectCmd, ok := cmdWithConn.Cmd.(command.SelectCommand)
@@ -76,6 +85,7 @@ func TestStartCommandReceiver(t *testing.T) {
 		}
 	})
 
+	// Test 3: Multiple concurrent connections
 	t.Run("concurrent connections", func(t *testing.T) {
 		numConnections := 3
 		done := make(chan struct{}, numConnections)
@@ -99,9 +109,11 @@ func TestStartCommandReceiver(t *testing.T) {
 			}(i)
 		}
 
+		// Collect all commands
 		for i := 0; i < numConnections; i++ {
 			select {
 			case <-done:
+				// Connection completed
 			case <-time.After(2 * time.Second):
 				t.Fatal("Timeout waiting for concurrent connection")
 			}
@@ -131,27 +143,33 @@ func waitForSocket(socketPath string, timeout time.Duration) error {
 }
 
 func TestStartCommandReceiverDebugMode(t *testing.T) {
+	// Set up test environment in debug mode
 	pid := 12345
 	debugMode := true
 	testCmdCh := make(chan CommandWithConn, 1)
 
+	// Start the command receiver
 	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
+	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
 		t.Fatalf("Socket not ready: %v", err)
 	}
 
+	// Connect and test
 	conn, err := net.Dial("unix", socketPath)
 	if err != nil {
 		t.Fatalf("Failed to connect to socket: %v", err)
 	}
 	defer conn.Close()
 
+	// Send a list command
 	if _, err := conn.Write([]byte("list\n")); err != nil {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 
+	// Wait for command to be received on channel
 	select {
 	case cmdWithConn := <-testCmdCh:
 		if _, ok := cmdWithConn.Cmd.(command.ListCommand); !ok {
@@ -164,6 +182,7 @@ func TestStartCommandReceiverDebugMode(t *testing.T) {
 }
 
 func TestStartCommandReceiverInvalidCommand(t *testing.T) {
+	// Set up test environment
 	pid := 12346
 	debugMode := false
 	testCmdCh := make(chan CommandWithConn, 1)
@@ -171,24 +190,30 @@ func TestStartCommandReceiverInvalidCommand(t *testing.T) {
 	socketPath := Start(pid, debugMode, testCmdCh)
 	defer os.RemoveAll(socketPath)
 
+	// Wait for socket to be ready with retry logic
 	if err := waitForSocket(socketPath, 2*time.Second); err != nil {
 		t.Fatalf("Socket not ready: %v", err)
 	}
 
+	// Connect and send invalid command
 	conn, err := net.Dial("unix", socketPath)
 	if err != nil {
 		t.Fatalf("Failed to connect to socket: %v", err)
 	}
 	defer conn.Close()
 
+	// Send an invalid command
 	if _, err := conn.Write([]byte("invalid\n")); err != nil {
 		t.Fatalf("Failed to write command: %v", err)
 	}
 
+	// The receiver should NOT send invalid commands on the channel
+	// Instead, it should close the connection and log the error
 	select {
 	case cmdWithConn := <-testCmdCh:
 		t.Errorf("Expected no command on channel for invalid input, got %T", cmdWithConn.Cmd)
 		cmdWithConn.Conn.Close()
 	case <-time.After(500 * time.Millisecond):
+		// This is expected - no command should be sent
 	}
 }

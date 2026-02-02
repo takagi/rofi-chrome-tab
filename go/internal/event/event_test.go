@@ -23,21 +23,25 @@ func TestParseEvent(t *testing.T) {
 		Tabs: tabs,
 	}
 
+	// Encode the test data as JSON
 	jsonData, err := json.Marshal(event)
 	if err != nil {
 		t.Fatalf("Failed to marshal test data: %v", err)
 	}
 
+	// Call ParseEvent to parse the JSON data
 	got, err := ParseEvent(jsonData)
 	if err != nil {
 		t.Fatalf("ParseEvent failed: %v", err)
 	}
 
+	// Assert returned value is UpdatedEvent
 	ev, ok := got.(UpdatedEvent)
 	if !ok {
 		t.Fatalf("Expected UpdatedEvent, got %T", got)
 	}
 
+	// Compare the contents
 	if len(ev.Tabs) != len(tabs) {
 		t.Fatalf("Expected %d tabs, got %d", len(tabs), len(ev.Tabs))
 	}

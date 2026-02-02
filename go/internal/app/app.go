@@ -18,7 +18,9 @@ import (
 	"rofi-chrome-tab/internal/types"
 )
 
+// Main
 func Run() error {
+	// Set up log file
 	logCloser, err := logging.SetupLogging("/tmp/rofi-chrome-tab.log")
 	if err != nil {
 		return err

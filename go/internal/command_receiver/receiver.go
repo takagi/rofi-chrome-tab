@@ -17,15 +17,18 @@ type CommandWithConn struct {
 }
 
 func Start(pid int, debugMode bool, cmdCh chan<- CommandWithConn) string {
+	// Determine socket path based on process ID and debug mode
 	socketPath := "/tmp/native-app.sock"
 	if !debugMode {
 		socketPath = fmt.Sprintf("/tmp/native-app.%d.sock", pid)
 	}
 
+	// Remove existing socket file
 	if err := os.RemoveAll(socketPath); err != nil {
 		log.Fatal(err)
 	}
 
+	// Receive commands from an Unix domain socket
 	go func() {
 		lis, err := net.Listen("unix", socketPath)
 		if err != nil {
